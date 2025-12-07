@@ -1,0 +1,4 @@
+/home/Kantanat/MagOp/build/CMakeFiles/MagOp_app.dir
+/home/Kantanat/MagOp/build/CMakeFiles/edit_cache.dir
+/home/Kantanat/MagOp/build/CMakeFiles/rebuild_cache.dir
+/home/Kantanat/MagOp/build/CMakeFiles/MagOp_app_autogen.dir
