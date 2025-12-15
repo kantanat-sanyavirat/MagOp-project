@@ -179,29 +179,53 @@ MagOp_app_autogen/mocs_compilation.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/MagOp_app.dir/build.make CMakeFiles/MagOp_app.dir/MagOp_app_autogen/mocs_compilation.cpp.s
 .PHONY : MagOp_app_autogen/mocs_compilation.cpp.s
 
-src/mian.o: src/mian.cpp.o
-.PHONY : src/mian.o
+main.o: main.cpp.o
+.PHONY : main.o
 
 # target to build an object file
-src/mian.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/MagOp_app.dir/build.make CMakeFiles/MagOp_app.dir/src/mian.cpp.o
-.PHONY : src/mian.cpp.o
+main.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/MagOp_app.dir/build.make CMakeFiles/MagOp_app.dir/main.cpp.o
+.PHONY : main.cpp.o
 
-src/mian.i: src/mian.cpp.i
-.PHONY : src/mian.i
+main.i: main.cpp.i
+.PHONY : main.i
 
 # target to preprocess a source file
-src/mian.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/MagOp_app.dir/build.make CMakeFiles/MagOp_app.dir/src/mian.cpp.i
-.PHONY : src/mian.cpp.i
+main.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/MagOp_app.dir/build.make CMakeFiles/MagOp_app.dir/main.cpp.i
+.PHONY : main.cpp.i
 
-src/mian.s: src/mian.cpp.s
-.PHONY : src/mian.s
+main.s: main.cpp.s
+.PHONY : main.s
 
 # target to generate assembly for a file
-src/mian.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/MagOp_app.dir/build.make CMakeFiles/MagOp_app.dir/src/mian.cpp.s
-.PHONY : src/mian.cpp.s
+main.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/MagOp_app.dir/build.make CMakeFiles/MagOp_app.dir/main.cpp.s
+.PHONY : main.cpp.s
+
+src/camera_handler.o: src/camera_handler.cpp.o
+.PHONY : src/camera_handler.o
+
+# target to build an object file
+src/camera_handler.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/MagOp_app.dir/build.make CMakeFiles/MagOp_app.dir/src/camera_handler.cpp.o
+.PHONY : src/camera_handler.cpp.o
+
+src/camera_handler.i: src/camera_handler.cpp.i
+.PHONY : src/camera_handler.i
+
+# target to preprocess a source file
+src/camera_handler.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/MagOp_app.dir/build.make CMakeFiles/MagOp_app.dir/src/camera_handler.cpp.i
+.PHONY : src/camera_handler.cpp.i
+
+src/camera_handler.s: src/camera_handler.cpp.s
+.PHONY : src/camera_handler.s
+
+# target to generate assembly for a file
+src/camera_handler.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/MagOp_app.dir/build.make CMakeFiles/MagOp_app.dir/src/camera_handler.cpp.s
+.PHONY : src/camera_handler.cpp.s
 
 # Help Target
 help:
@@ -217,9 +241,12 @@ help:
 	@echo "... MagOp_app_autogen/mocs_compilation.o"
 	@echo "... MagOp_app_autogen/mocs_compilation.i"
 	@echo "... MagOp_app_autogen/mocs_compilation.s"
-	@echo "... src/mian.o"
-	@echo "... src/mian.i"
-	@echo "... src/mian.s"
+	@echo "... main.o"
+	@echo "... main.i"
+	@echo "... main.s"
+	@echo "... src/camera_handler.o"
+	@echo "... src/camera_handler.i"
+	@echo "... src/camera_handler.s"
 .PHONY : help
 
 

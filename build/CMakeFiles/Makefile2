@@ -88,12 +88,12 @@ CMakeFiles/MagOp_app.dir/all: CMakeFiles/MagOp_app_autogen_timestamp_deps.dir/al
 CMakeFiles/MagOp_app.dir/all: CMakeFiles/MagOp_app_autogen.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/MagOp_app.dir/build.make CMakeFiles/MagOp_app.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/MagOp_app.dir/build.make CMakeFiles/MagOp_app.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/kantanat/MagOp-project/build/CMakeFiles --progress-num=1,2,3,4 "Built target MagOp_app"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/kantanat/MagOp-project/build/CMakeFiles --progress-num=1,2,3,4,5 "Built target MagOp_app"
 .PHONY : CMakeFiles/MagOp_app.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/MagOp_app.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/kantanat/MagOp-project/build/CMakeFiles 5
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/kantanat/MagOp-project/build/CMakeFiles 6
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/MagOp_app.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/kantanat/MagOp-project/build/CMakeFiles 0
 .PHONY : CMakeFiles/MagOp_app.dir/rule
@@ -105,7 +105,7 @@ MagOp_app: CMakeFiles/MagOp_app.dir/rule
 # codegen rule for target.
 CMakeFiles/MagOp_app.dir/codegen: CMakeFiles/MagOp_app_autogen_timestamp_deps.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/MagOp_app.dir/build.make CMakeFiles/MagOp_app.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/kantanat/MagOp-project/build/CMakeFiles --progress-num=1,2,3,4 "Finished codegen for target MagOp_app"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/kantanat/MagOp-project/build/CMakeFiles --progress-num=1,2,3,4,5 "Finished codegen for target MagOp_app"
 .PHONY : CMakeFiles/MagOp_app.dir/codegen
 
 # clean rule for target.
@@ -152,7 +152,7 @@ CMakeFiles/MagOp_app_autogen_timestamp_deps.dir/clean:
 CMakeFiles/MagOp_app_autogen.dir/all: CMakeFiles/MagOp_app_autogen_timestamp_deps.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/MagOp_app_autogen.dir/build.make CMakeFiles/MagOp_app_autogen.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/MagOp_app_autogen.dir/build.make CMakeFiles/MagOp_app_autogen.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/kantanat/MagOp-project/build/CMakeFiles --progress-num=5 "Built target MagOp_app_autogen"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/kantanat/MagOp-project/build/CMakeFiles --progress-num=6 "Built target MagOp_app_autogen"
 .PHONY : CMakeFiles/MagOp_app_autogen.dir/all
 
 # Build rule for subdir invocation for target.
@@ -169,7 +169,7 @@ MagOp_app_autogen: CMakeFiles/MagOp_app_autogen.dir/rule
 # codegen rule for target.
 CMakeFiles/MagOp_app_autogen.dir/codegen: CMakeFiles/MagOp_app_autogen_timestamp_deps.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/MagOp_app_autogen.dir/build.make CMakeFiles/MagOp_app_autogen.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/kantanat/MagOp-project/build/CMakeFiles --progress-num=5 "Finished codegen for target MagOp_app_autogen"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/kantanat/MagOp-project/build/CMakeFiles --progress-num=6 "Finished codegen for target MagOp_app_autogen"
 .PHONY : CMakeFiles/MagOp_app_autogen.dir/codegen
 
 # clean rule for target.

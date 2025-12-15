@@ -300,7 +300,15 @@
 	"CROSS_CONFIG" : false,
 	"DEP_FILE" : "/home/kantanat/MagOp-project/build/MagOp_app_autogen/deps",
 	"DEP_FILE_RULE_NAME" : "MagOp_app_autogen/timestamp",
-	"HEADERS" : [],
+	"HEADERS" : 
+	[
+		[
+			"/home/kantanat/MagOp-project/include/camera_handler.h",
+			"MU",
+			"6YEA5652QU/moc_camera_handler.cpp",
+			null
+		]
+	],
 	"HEADER_EXTENSIONS" : [ "h", "hh", "h++", "hm", "hpp", "hxx", "in", "txx" ],
 	"INCLUDE_DIR" : "/home/kantanat/MagOp-project/build/MagOp_app_autogen/include",
 	"MOC_COMPILATION_FILE" : "/home/kantanat/MagOp-project/build/MagOp_app_autogen/mocs_compilation.cpp",
@@ -314,8 +322,8 @@
 	],
 	"MOC_INCLUDES" : 
 	[
-		"/home/kantanat/MagOp-project/lib/onnxruntime/include",
 		"/home/kantanat/MagOp-project/include",
+		"/home/kantanat/MagOp-project/lib/onnxruntime/include",
 		"/usr/include/aarch64-linux-gnu/qt6/QtWidgets",
 		"/usr/include/aarch64-linux-gnu/qt6",
 		"/usr/include/aarch64-linux-gnu/qt6/QtCore",
@@ -363,7 +371,8 @@
 	"SETTINGS_FILE" : "/home/kantanat/MagOp-project/build/CMakeFiles/MagOp_app_autogen.dir/AutogenUsed.txt",
 	"SOURCES" : 
 	[
-		[ "/home/kantanat/MagOp-project/src/mian.cpp", "MU", null ]
+		[ "/home/kantanat/MagOp-project/main.cpp", "MU", null ],
+		[ "/home/kantanat/MagOp-project/src/camera_handler.cpp", "MU", null ]
 	],
 	"UIC_OPTIONS" : [],
 	"UIC_SEARCH_PATHS" : [],

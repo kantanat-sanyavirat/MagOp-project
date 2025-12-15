@@ -7,8 +7,10 @@ file(REMOVE_RECURSE
   "MagOp_app_autogen"
   "CMakeFiles/MagOp_app.dir/MagOp_app_autogen/mocs_compilation.cpp.o"
   "CMakeFiles/MagOp_app.dir/MagOp_app_autogen/mocs_compilation.cpp.o.d"
-  "CMakeFiles/MagOp_app.dir/src/mian.cpp.o"
-  "CMakeFiles/MagOp_app.dir/src/mian.cpp.o.d"
+  "CMakeFiles/MagOp_app.dir/main.cpp.o"
+  "CMakeFiles/MagOp_app.dir/main.cpp.o.d"
+  "CMakeFiles/MagOp_app.dir/src/camera_handler.cpp.o"
+  "CMakeFiles/MagOp_app.dir/src/camera_handler.cpp.o.d"
   "MagOp_app_autogen/mocs_compilation.cpp"
   "MagOp_app_autogen/timestamp"
 )
