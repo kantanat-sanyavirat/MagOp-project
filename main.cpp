@@ -1,25 +1,10 @@
-#include <QCoreApplication>
+#include <QApplication>
 #include <iostream>
 #include <opencv2/opencv.hpp>
 #include <onnxruntime_cxx_api.h>
-#include <csignal> // สำหรับการดักจับ Signal ctrl+c
 #include "camera_handler.h"
 
-
-// ตัวแปร Global pointer เพื่อให้ Signal Handler เรียกใช้ได้
-QCoreApplication* appPtr = nullptr;
-
-// ฟังก์ชันที่จะทำงานเมื่อกด Ctrl+C
-void handleSignal(int signal) {
-    if (signal == SIGINT) {
-        std::cout << "\nWarning: Ctrl+C pressed! Shutting down gracefully..." << std::endl;
-        if (appPtr) {
-            appPtr->quit(); // สั่งให้ Qt ปิดโปรแกรมอย่างถูกต้อง
-        }
-    }
-}
-
-// --- ฟังก์ชันเช็คระบบ  ---
+// --- ฟังก์ชันเช็คระบบ ---
 int performSystemCheck() {
     std::cout << "----------------------------------------" << std::endl;
     std::cout << "MagOp System: Starting Initialization..." << std::endl;
@@ -40,7 +25,6 @@ int performSystemCheck() {
     // 2. เช็ค ONNX Runtime
     std::cout << "[Check 2] ONNX Runtime ... ";
     try {
-        // ใช้ Level Error จะได้ไม่รกหน้าจอ
         Ort::Env env(ORT_LOGGING_LEVEL_ERROR, "MagOp_Check");
         Ort::SessionOptions options;
         std::cout << "PASSED" << std::endl;
@@ -55,36 +39,38 @@ int performSystemCheck() {
 
 // --- ฟังก์ชันหลัก ---
 int main(int argc, char *argv[]) {
-    QCoreApplication app(argc, argv);
-    appPtr = &app; 
+    // ใช้ QApplication เพื่อรองรับ GUI (แก้ปัญหา GLib Critical Error)
+    QApplication app(argc, argv);
 
- 
-    std::signal(SIGINT, handleSignal);
-
-     if (performSystemCheck() != 0) return -1;
+    // เช็คระบบก่อนเริ่ม (ถ้าไม่ผ่านให้ปิดโปรแกรม)
+    // if (performSystemCheck() != 0) return -1; 
 
     std::cout << "System Ready! Opening Camera..." << std::endl;
     std::cout << "Controls: 's' = Save Image, 'q' = Quit" << std::endl;
 
     CameraHandler camera;
 
+    // เชื่อมต่อสัญญาณจากกล้อง
     QObject::connect(&camera, &CameraHandler::frameReady, [&](cv::Mat frame){
         cv::imshow("MagOp Camera", frame);
+        
+        // รอรับปุ่มกด 1ms
         char key = (char)cv::waitKey(1);
 
         if (key == 'q') {
-            app.quit();
+            app.quit(); // สั่งปิดโปรแกรม
         } 
         else if (key == 's') {
-            camera.saveCapturedImage(frame);
+            camera.saveCapturedImage(frame); // สั่งเซฟรูป
         }
     });
 
     camera.startCamera(0);
 
-
+    // เข้าสู่ Loop การทำงาน
     int ret = app.exec();
     
+    // คืนค่าหน่วยความจำเมื่อจบการทำงาน
     cv::destroyAllWindows();
     std::cout << "Application exited successfully." << std::endl;
     
