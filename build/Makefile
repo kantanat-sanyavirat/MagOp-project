@@ -203,6 +203,30 @@ main.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/MagOp_app.dir/build.make CMakeFiles/MagOp_app.dir/main.cpp.s
 .PHONY : main.cpp.s
 
+src/ai_processing.o: src/ai_processing.cpp.o
+.PHONY : src/ai_processing.o
+
+# target to build an object file
+src/ai_processing.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/MagOp_app.dir/build.make CMakeFiles/MagOp_app.dir/src/ai_processing.cpp.o
+.PHONY : src/ai_processing.cpp.o
+
+src/ai_processing.i: src/ai_processing.cpp.i
+.PHONY : src/ai_processing.i
+
+# target to preprocess a source file
+src/ai_processing.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/MagOp_app.dir/build.make CMakeFiles/MagOp_app.dir/src/ai_processing.cpp.i
+.PHONY : src/ai_processing.cpp.i
+
+src/ai_processing.s: src/ai_processing.cpp.s
+.PHONY : src/ai_processing.s
+
+# target to generate assembly for a file
+src/ai_processing.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/MagOp_app.dir/build.make CMakeFiles/MagOp_app.dir/src/ai_processing.cpp.s
+.PHONY : src/ai_processing.cpp.s
+
 src/camera_handler.o: src/camera_handler.cpp.o
 .PHONY : src/camera_handler.o
 
@@ -244,6 +268,9 @@ help:
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"
+	@echo "... src/ai_processing.o"
+	@echo "... src/ai_processing.i"
+	@echo "... src/ai_processing.s"
 	@echo "... src/camera_handler.o"
 	@echo "... src/camera_handler.i"
 	@echo "... src/camera_handler.s"

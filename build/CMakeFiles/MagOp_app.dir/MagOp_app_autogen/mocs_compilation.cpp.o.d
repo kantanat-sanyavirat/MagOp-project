@@ -1,8 +1,8 @@
 CMakeFiles/MagOp_app.dir/MagOp_app_autogen/mocs_compilation.cpp.o: \
  /home/kantanat/MagOp-project/build/MagOp_app_autogen/mocs_compilation.cpp \
  /usr/include/stdc-predef.h \
- /home/kantanat/MagOp-project/build/MagOp_app_autogen/6YEA5652QU/moc_camera_handler.cpp \
- /home/kantanat/MagOp-project/build/MagOp_app_autogen/6YEA5652QU/../../../include/camera_handler.h \
+ /home/kantanat/MagOp-project/build/MagOp_app_autogen/6YEA5652QU/moc_ai_processing.cpp \
+ /home/kantanat/MagOp-project/build/MagOp_app_autogen/6YEA5652QU/../../../include/ai_processing.h \
  /usr/include/aarch64-linux-gnu/qt6/QtCore/QObject \
  /usr/include/aarch64-linux-gnu/qt6/QtCore/qobject.h \
  /usr/include/aarch64-linux-gnu/qt6/QtCore/qobjectdefs.h \
@@ -327,90 +327,14 @@ CMakeFiles/MagOp_app.dir/MagOp_app_autogen/mocs_compilation.cpp.o: \
  /usr/include/aarch64-linux-gnu/qt6/QtCore/qbindingstorage.h \
  /usr/include/c++/14/chrono /usr/include/c++/14/bits/chrono.h \
  /usr/include/c++/14/ratio /usr/include/c++/14/ctime \
- /usr/include/aarch64-linux-gnu/qt6/QtCore/QTimer \
- /usr/include/aarch64-linux-gnu/qt6/QtCore/qtimer.h \
- /usr/include/aarch64-linux-gnu/qt6/QtCore/qbasictimer.h \
- /usr/include/aarch64-linux-gnu/qt6/QtCore/qobject.h \
- /usr/include/aarch64-linux-gnu/qt6/QtCore/QDebug \
- /usr/include/aarch64-linux-gnu/qt6/QtCore/qdebug.h \
- /usr/include/aarch64-linux-gnu/qt6/QtCore/qtextstream.h \
- /usr/include/aarch64-linux-gnu/qt6/QtCore/qcontiguouscache.h \
- /usr/include/c++/14/climits \
- /usr/lib/gcc/aarch64-linux-gnu/14/include/limits.h \
- /usr/lib/gcc/aarch64-linux-gnu/14/include/syslimits.h \
- /usr/include/limits.h /usr/include/aarch64-linux-gnu/bits/posix1_lim.h \
- /usr/include/aarch64-linux-gnu/bits/local_lim.h \
- /usr/include/linux/limits.h \
- /usr/include/aarch64-linux-gnu/bits/posix2_lim.h \
- /usr/include/aarch64-linux-gnu/bits/xopen_lim.h \
- /usr/include/aarch64-linux-gnu/bits/uio_lim.h \
- /usr/include/aarch64-linux-gnu/qt6/QtCore/qsharedpointer.h \
- /usr/include/aarch64-linux-gnu/qt6/QtCore/qshareddata.h \
- /usr/include/aarch64-linux-gnu/qt6/QtCore/qsharedpointer_impl.h \
- /usr/include/aarch64-linux-gnu/qt6/QtCore/qmap.h \
- /usr/include/aarch64-linux-gnu/qt6/QtCore/qshareddata_impl.h \
- /usr/include/aarch64-linux-gnu/qt6/QtCore/qset.h \
- /usr/include/aarch64-linux-gnu/qt6/QtCore/qhash.h \
- /usr/include/aarch64-linux-gnu/qt6/QtCore/qvarlengtharray.h \
- /usr/include/aarch64-linux-gnu/qt6/QtGui/QImage \
- /usr/include/aarch64-linux-gnu/qt6/QtGui/qimage.h \
- /usr/include/aarch64-linux-gnu/qt6/QtGui/qtguiglobal.h \
- /usr/include/aarch64-linux-gnu/qt6/QtGui/qtgui-config.h \
- /usr/include/aarch64-linux-gnu/qt6/QtGui/qtguiexports.h \
- /usr/include/aarch64-linux-gnu/qt6/QtGui/qcolor.h \
- /usr/include/aarch64-linux-gnu/qt6/QtGui/qrgb.h \
- /usr/include/aarch64-linux-gnu/qt6/QtGui/qrgba64.h \
- /usr/include/aarch64-linux-gnu/qt6/QtGui/qpaintdevice.h \
- /usr/include/aarch64-linux-gnu/qt6/QtGui/qwindowdefs.h \
- /usr/include/aarch64-linux-gnu/qt6/QtCore/qrect.h \
- /usr/include/aarch64-linux-gnu/qt6/QtCore/qmargins.h \
- /usr/include/aarch64-linux-gnu/qt6/QtCore/q23utility.h \
- /usr/include/aarch64-linux-gnu/qt6/QtCore/qsize.h \
- /usr/include/aarch64-linux-gnu/qt6/QtCore/qpoint.h \
- /usr/include/aarch64-linux-gnu/qt6/QtGui/qpixelformat.h \
- /usr/include/aarch64-linux-gnu/qt6/QtGui/qtransform.h \
- /usr/include/aarch64-linux-gnu/qt6/QtGui/qpolygon.h \
- /usr/include/aarch64-linux-gnu/qt6/QtGui/qregion.h \
- /usr/include/aarch64-linux-gnu/qt6/QtCore/qspan.h \
- /usr/include/c++/14/cassert \
- /usr/include/aarch64-linux-gnu/qt6/QtCore/q20iterator.h \
- /usr/include/aarch64-linux-gnu/qt6/QtCore/qline.h \
- /usr/include/aarch64-linux-gnu/qt6/QtCore/QDir \
- /usr/include/aarch64-linux-gnu/qt6/QtCore/qdir.h \
- /usr/include/aarch64-linux-gnu/qt6/QtCore/qdirlisting.h \
- /usr/include/aarch64-linux-gnu/qt6/QtCore/qfiledevice.h \
- /usr/include/aarch64-linux-gnu/qt6/QtCore/qiodevice.h \
- /usr/include/aarch64-linux-gnu/qt6/QtCore/qdatetime.h \
- /usr/include/aarch64-linux-gnu/qt6/QtCore/qcalendar.h \
- /usr/include/aarch64-linux-gnu/qt6/QtCore/qlocale.h \
- /usr/include/aarch64-linux-gnu/qt6/QtCore/qvariant.h \
- /usr/include/aarch64-linux-gnu/qt6/QtCore/qdebug.h \
- /usr/include/aarch64-linux-gnu/qt6/QtCore/qfile.h \
- /usr/include/c++/14/filesystem /usr/include/c++/14/bits/fs_fwd.h \
- /usr/include/c++/14/bits/fs_path.h /usr/include/c++/14/locale \
- /usr/include/c++/14/bits/locale_facets.h /usr/include/c++/14/cwctype \
- /usr/include/wctype.h /usr/include/aarch64-linux-gnu/bits/wctype-wchar.h \
- /usr/include/aarch64-linux-gnu/c++/14/bits/ctype_base.h \
- /usr/include/aarch64-linux-gnu/c++/14/bits/ctype_inline.h \
- /usr/include/c++/14/bits/locale_facets.tcc \
- /usr/include/c++/14/bits/locale_facets_nonio.h \
- /usr/include/aarch64-linux-gnu/c++/14/bits/time_members.h \
- /usr/include/aarch64-linux-gnu/c++/14/bits/messages_members.h \
- /usr/include/libintl.h /usr/include/c++/14/bits/codecvt.h \
- /usr/include/c++/14/bits/locale_facets_nonio.tcc \
- /usr/include/c++/14/bits/locale_conv.h /usr/include/c++/14/iomanip \
- /usr/include/c++/14/bits/quoted_string.h /usr/include/c++/14/sstream \
- /usr/include/c++/14/istream /usr/include/c++/14/ios \
- /usr/include/c++/14/bits/basic_ios.h \
- /usr/include/c++/14/bits/basic_ios.tcc /usr/include/c++/14/ostream \
- /usr/include/c++/14/bits/ostream.tcc \
- /usr/include/c++/14/bits/istream.tcc \
- /usr/include/c++/14/bits/sstream.tcc /usr/include/c++/14/codecvt \
- /usr/include/c++/14/bits/fs_dir.h /usr/include/c++/14/bits/fs_ops.h \
- /usr/include/aarch64-linux-gnu/qt6/QtCore/qfileinfo.h \
- /usr/include/aarch64-linux-gnu/qt6/QtCore/qtimezone.h \
- /usr/include/aarch64-linux-gnu/qt6/QtCore/QDateTime \
- /usr/include/aarch64-linux-gnu/qt6/QtCore/qdatetime.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/QMutex \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/qmutex.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/qdeadlinetimer.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/qelapsedtimer.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/qtsan_impl.h \
+ /usr/include/c++/14/queue /usr/include/c++/14/deque \
+ /usr/include/c++/14/bits/stl_deque.h /usr/include/c++/14/bits/deque.tcc \
+ /usr/include/c++/14/bits/stl_queue.h \
  /usr/include/opencv4/opencv2/opencv.hpp \
  /usr/include/opencv4/opencv2/opencv_modules.hpp \
  /usr/include/opencv4/opencv2/core.hpp \
@@ -421,7 +345,15 @@ CMakeFiles/MagOp_app.dir/MagOp_app_autogen/mocs_compilation.cpp.o: \
  /usr/lib/gcc/aarch64-linux-gnu/14/include/arm_neon.h \
  /usr/lib/gcc/aarch64-linux-gnu/14/include/arm_fp16.h \
  /usr/lib/gcc/aarch64-linux-gnu/14/include/arm_bf16.h \
- /usr/include/opencv4/opencv2/core/base.hpp \
+ /usr/include/opencv4/opencv2/core/base.hpp /usr/include/c++/14/climits \
+ /usr/lib/gcc/aarch64-linux-gnu/14/include/limits.h \
+ /usr/lib/gcc/aarch64-linux-gnu/14/include/syslimits.h \
+ /usr/include/limits.h /usr/include/aarch64-linux-gnu/bits/posix1_lim.h \
+ /usr/include/aarch64-linux-gnu/bits/local_lim.h \
+ /usr/include/linux/limits.h \
+ /usr/include/aarch64-linux-gnu/bits/posix2_lim.h \
+ /usr/include/aarch64-linux-gnu/bits/xopen_lim.h \
+ /usr/include/aarch64-linux-gnu/bits/uio_lim.h \
  /usr/include/opencv4/opencv2/core/cvstd.hpp \
  /usr/include/opencv4/opencv2/core/cvstd_wrapper.hpp \
  /usr/include/opencv4/opencv2/core/neon_utils.hpp \
@@ -440,7 +372,18 @@ CMakeFiles/MagOp_app.dir/MagOp_app_autogen/mocs_compilation.cpp.o: \
  /usr/include/opencv4/opencv2/core/persistence.hpp \
  /usr/include/opencv4/opencv2/core/operations.hpp \
  /usr/include/opencv4/opencv2/core/cvstd.inl.hpp \
- /usr/include/c++/14/complex \
+ /usr/include/c++/14/complex /usr/include/c++/14/sstream \
+ /usr/include/c++/14/istream /usr/include/c++/14/ios \
+ /usr/include/c++/14/bits/basic_ios.h \
+ /usr/include/c++/14/bits/locale_facets.h /usr/include/c++/14/cwctype \
+ /usr/include/wctype.h /usr/include/aarch64-linux-gnu/bits/wctype-wchar.h \
+ /usr/include/aarch64-linux-gnu/c++/14/bits/ctype_base.h \
+ /usr/include/aarch64-linux-gnu/c++/14/bits/ctype_inline.h \
+ /usr/include/c++/14/bits/locale_facets.tcc \
+ /usr/include/c++/14/bits/basic_ios.tcc /usr/include/c++/14/ostream \
+ /usr/include/c++/14/bits/ostream.tcc \
+ /usr/include/c++/14/bits/istream.tcc \
+ /usr/include/c++/14/bits/sstream.tcc \
  /usr/include/opencv4/opencv2/core/utility.hpp /usr/include/c++/14/mutex \
  /usr/include/c++/14/bits/std_mutex.h \
  /usr/include/c++/14/bits/unique_lock.h \
@@ -493,7 +436,14 @@ CMakeFiles/MagOp_app.dir/MagOp_app_autogen/mocs_compilation.cpp.o: \
  /usr/include/opencv4/opencv2/flann/hierarchical_clustering_index.h \
  /usr/include/opencv4/opencv2/flann/lsh_index.h \
  /usr/include/opencv4/opencv2/flann/lsh_table.h \
- /usr/include/c++/14/math.h \
+ /usr/include/c++/14/iomanip /usr/include/c++/14/locale \
+ /usr/include/c++/14/bits/locale_facets_nonio.h \
+ /usr/include/aarch64-linux-gnu/c++/14/bits/time_members.h \
+ /usr/include/aarch64-linux-gnu/c++/14/bits/messages_members.h \
+ /usr/include/libintl.h /usr/include/c++/14/bits/codecvt.h \
+ /usr/include/c++/14/bits/locale_facets_nonio.tcc \
+ /usr/include/c++/14/bits/locale_conv.h \
+ /usr/include/c++/14/bits/quoted_string.h /usr/include/c++/14/math.h \
  /usr/include/opencv4/opencv2/flann/autotuned_index.h \
  /usr/include/opencv4/opencv2/flann/ground_truth.h \
  /usr/include/opencv4/opencv2/flann/index_testing.h \
@@ -529,9 +479,6 @@ CMakeFiles/MagOp_app.dir/MagOp_app_autogen/mocs_compilation.cpp.o: \
  /usr/include/opencv4/opencv2/stitching/detail/matchers.hpp \
  /usr/include/opencv4/opencv2/stitching/detail/util.hpp \
  /usr/include/opencv4/opencv2/stitching/detail/util_inl.hpp \
- /usr/include/c++/14/queue /usr/include/c++/14/deque \
- /usr/include/c++/14/bits/stl_deque.h /usr/include/c++/14/bits/deque.tcc \
- /usr/include/c++/14/bits/stl_queue.h \
  /usr/include/opencv4/opencv2/stitching/detail/camera.hpp \
  /usr/include/opencv4/opencv2/stitching/detail/exposure_compensate.hpp \
  /usr/include/opencv4/opencv2/stitching/detail/seam_finders.hpp \
@@ -540,4 +487,63 @@ CMakeFiles/MagOp_app.dir/MagOp_app_autogen/mocs_compilation.cpp.o: \
  /usr/include/opencv4/opencv2/video.hpp \
  /usr/include/opencv4/opencv2/video/tracking.hpp \
  /usr/include/opencv4/opencv2/video/background_segm.hpp \
- /usr/include/aarch64-linux-gnu/qt6/QtCore/qtmochelpers.h
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/qtmochelpers.h \
+ /home/kantanat/MagOp-project/build/MagOp_app_autogen/6YEA5652QU/moc_camera_handler.cpp \
+ /home/kantanat/MagOp-project/build/MagOp_app_autogen/6YEA5652QU/../../../include/camera_handler.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/QTimer \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/qtimer.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/qbasictimer.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/qobject.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/QDebug \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/qdebug.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/qtextstream.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/qcontiguouscache.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/qsharedpointer.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/qshareddata.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/qsharedpointer_impl.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/qmap.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/qshareddata_impl.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/qset.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/qhash.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/qvarlengtharray.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtGui/QImage \
+ /usr/include/aarch64-linux-gnu/qt6/QtGui/qimage.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtGui/qtguiglobal.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtGui/qtgui-config.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtGui/qtguiexports.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtGui/qcolor.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtGui/qrgb.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtGui/qrgba64.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtGui/qpaintdevice.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtGui/qwindowdefs.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/qrect.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/qmargins.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/q23utility.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/qsize.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/qpoint.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtGui/qpixelformat.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtGui/qtransform.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtGui/qpolygon.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtGui/qregion.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/qspan.h \
+ /usr/include/c++/14/cassert \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/q20iterator.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/qline.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/QDir \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/qdir.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/qdirlisting.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/qfiledevice.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/qiodevice.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/qdatetime.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/qcalendar.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/qlocale.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/qvariant.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/qdebug.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/qfile.h \
+ /usr/include/c++/14/filesystem /usr/include/c++/14/bits/fs_fwd.h \
+ /usr/include/c++/14/bits/fs_path.h /usr/include/c++/14/codecvt \
+ /usr/include/c++/14/bits/fs_dir.h /usr/include/c++/14/bits/fs_ops.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/qfileinfo.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/qtimezone.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/QDateTime \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/qdatetime.h

@@ -9,6 +9,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/MagOp_app.dir/MagOp_app_autogen/mocs_compilation.cpp.o.d"
   "CMakeFiles/MagOp_app.dir/main.cpp.o"
   "CMakeFiles/MagOp_app.dir/main.cpp.o.d"
+  "CMakeFiles/MagOp_app.dir/src/ai_processing.cpp.o"
+  "CMakeFiles/MagOp_app.dir/src/ai_processing.cpp.o.d"
   "CMakeFiles/MagOp_app.dir/src/camera_handler.cpp.o"
   "CMakeFiles/MagOp_app.dir/src/camera_handler.cpp.o.d"
   "MagOp_app_autogen/mocs_compilation.cpp"

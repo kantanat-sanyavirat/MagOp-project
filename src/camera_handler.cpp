@@ -50,7 +50,7 @@ cv::Mat CameraHandler::getCurrentFrame() const
     return currentFrame.clone();
 }
 
-// --- ฟังก์ชันบันทึกภาพที่เพิ่มเข้ามา ---
+
 void CameraHandler::saveCapturedImage(const cv::Mat& frame)
 {
     if (frame.empty()) return;

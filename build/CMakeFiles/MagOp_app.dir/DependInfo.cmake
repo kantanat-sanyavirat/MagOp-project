@@ -11,6 +11,7 @@ set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "" "MagOp_app_autogen/timestamp" "custom" "MagOp_app_autogen/deps"
   "/home/kantanat/MagOp-project/build/MagOp_app_autogen/mocs_compilation.cpp" "CMakeFiles/MagOp_app.dir/MagOp_app_autogen/mocs_compilation.cpp.o" "gcc" "CMakeFiles/MagOp_app.dir/MagOp_app_autogen/mocs_compilation.cpp.o.d"
   "/home/kantanat/MagOp-project/main.cpp" "CMakeFiles/MagOp_app.dir/main.cpp.o" "gcc" "CMakeFiles/MagOp_app.dir/main.cpp.o.d"
+  "/home/kantanat/MagOp-project/src/ai_processing.cpp" "CMakeFiles/MagOp_app.dir/src/ai_processing.cpp.o" "gcc" "CMakeFiles/MagOp_app.dir/src/ai_processing.cpp.o.d"
   "/home/kantanat/MagOp-project/src/camera_handler.cpp" "CMakeFiles/MagOp_app.dir/src/camera_handler.cpp.o" "gcc" "CMakeFiles/MagOp_app.dir/src/camera_handler.cpp.o.d"
   "" "/home/kantanat/MagOp-project/MagOp_app" "gcc" "CMakeFiles/MagOp_app.dir/link.d"
   )
