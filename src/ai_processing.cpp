@@ -33,9 +33,9 @@ void AI_Processing::processNextFrame()
     // [ZONE AI] (Simulation)
     // ==========================================
     std::cout << "[AI Processing] Analyzing... Queue left: " << frameQueue.size() << std::endl;
-    
-    // จำลองเวลาประมวลผล 0.5 วินาที
-    QThread::msleep(500); 
+
+    // จำลองเวลาประมวลผล 3 วินาที
+    QThread::msleep(3000); 
 
     // วาดผลลัพธ์สมมติ
     cv::putText(inputFrame, "ID: testsubject01", cv::Point(50, 50), 
