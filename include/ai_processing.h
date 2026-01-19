@@ -4,28 +4,34 @@
 #include <QObject>
 #include <QMutex>
 #include <queue>
+#include <vector>
 #include <opencv2/opencv.hpp>
 #include <QString>
 
-//ชั่วคราว: โครงสร้างข้อมูลสำหรับส่งผลลัพธ์การตรวจจับ
-struct DetectionResult {
-    cv::Mat originalImage; // รูปต้นฉบับ (ยังไม่วาดอะไรทับ)
-    cv::Rect boundingBox;  // พิกัดสี่เหลี่ยม (x, y, width, height)
-    QString detectedText;  // ข้อความที่ AI อ่านได้
-    float confidence;      // ความมั่นใจ (0.0 - 1.0)
+// struct ลูก
+struct DetectedObject {
+    cv::Rect boundingBox;
+    QString label;
+    float confidence;
 };
+
+// struct แม่ (ที่เราจะส่ง)
+struct FrameResult {
+    cv::Mat originalImage;
+    std::vector<DetectedObject> detections; // เก็บหลายตัว
+    QString timestamp;
+};
+Q_DECLARE_METATYPE(FrameResult) // <--- ต้องประกาศตัวนี้
 
 class AI_Processing : public QObject
 {
     Q_OBJECT
-
 public:
     explicit AI_Processing(QObject *parent = nullptr);
     void addFrameToQueue(const cv::Mat &frame);
 
 signals:
-    // --- 2. แก้ Signal ให้ส่งกล่องข้อมูลแทน ---
-    void resultReady(DetectionResult data); 
+    void resultReady(FrameResult data); // <--- ส่ง FrameResult
 
 private slots:
     void processNextFrame();

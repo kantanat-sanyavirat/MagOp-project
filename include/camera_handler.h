@@ -5,8 +5,8 @@
 #include <QTimer>
 #include <QDebug>
 #include <QImage>
-#include <QDir>       // <--- เพิ่มตัวจัดการไฟล์/โฟลเดอร์
-#include <QDateTime>  // <--- เพิ่มตัวจัดการเวลา
+#include <QDir>       
+#include <QDateTime> 
 #include <opencv2/opencv.hpp>
 
 class CameraHandler : public QObject
@@ -20,8 +20,7 @@ public:
     void startCamera(int camIndex = 0);
     void stopCamera();
     cv::Mat getCurrentFrame() const;
-
-    // --- ฟังก์ชันใหม่: สั่งบันทึกภาพ ---
+    
     void saveCapturedImage(const cv::Mat& frame); 
 
 signals:

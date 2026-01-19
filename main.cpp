@@ -2,88 +2,128 @@
 #include <QThread>
 #include <QDir>
 #include <QDateTime>
+#include <QFile>
+#include <QJsonDocument>
+#include <QJsonObject>
 #include <iostream>
-#include <opencv2/opencv.hpp>
-#include <onnxruntime_cxx_api.h>
-#include "camera_handler.h"
-#include "ai_processing.h" 
 
-// --- ฟังก์ชันช่วยบันทึกไฟล์ (เหมือนเดิม) ---
-void saveResultToDisk(const cv::Mat& image, const QString& infoText) {
-    QString folderName = "ai_output";
+// ไม่ต้องใส่ path ยาวๆ เพราะ CMake จัดการให้แล้ว
+#include "camera_handler.h"
+#include "ai_processing.h"
+
+// -----------------------------------------------------------------
+// [BACKEND] ฟังก์ชันบันทึกผลลัพธ์ (ใช้ Path แบบระบุเต็ม เพื่อความชัวร์)
+// -----------------------------------------------------------------
+void finalizePrintJob(const FrameResult& rawData, const QString& userEditedText) {
+    
+    // 1. ระบุตำแหน่งโฟลเดอร์ output โดยอ้างอิงจาก Home Directory ของ User
+    // ผลลัพธ์จะได้ประมาณ: "/home/kantanat/MagOp-project/ai_output"
+    QString homePath = QDir::homePath();
+    QString folderName = homePath + "/MagOp-project/ai_output";
+    
+    // 2. สร้างโฟลเดอร์ถ้ายังไม่มี
     QDir dir(folderName);
     if (!dir.exists()) {
-        dir.mkpath(".");
+        if (dir.mkpath(".")) {
+            std::cout << ">> [INFO] Created output folder: " << folderName.toStdString() << std::endl;
+        } else {
+            std::cerr << ">> [ERROR] Could not create folder: " << folderName.toStdString() << std::endl;
+            return; // หยุดทำงานถ้าสร้างโฟลเดอร์ไม่ได้
+        }
     }
+
+    // 3. ตั้งชื่อไฟล์ตามเวลา
     QString timestamp = QDateTime::currentDateTime().toString("yyyyMMdd_HHmmss_zzz");
-    QString filename = QString("%1/RESULT_%2.jpg").arg(folderName).arg(timestamp);
+    QString imgName = QString("RESULT_%1.jpg").arg(timestamp);
+    QString fullImgPath = QString("%1/%2").arg(folderName).arg(imgName);
+    
+    // 4. บันทึกรูปต้นฉบับ (Clean Image)
+    if (cv::imwrite(fullImgPath.toStdString(), rawData.originalImage)) {
+        
+        // 5. บันทึกข้อมูล JSON (Overlay Data) คู่กัน
+        QJsonObject root;
+        root["image_file"] = imgName;
+        root["timestamp"] = rawData.timestamp;
 
-    bool success = cv::imwrite(filename.toStdString(), image);
+        QJsonObject overlay;
+        overlay["text_content"] = userEditedText;
+        
+        // หาพิกัดที่จะวางข้อความ
+        int x = 50, y = 50;
+        if (!rawData.detections.empty()) {
+            x = rawData.detections[0].boundingBox.x;
+            y = rawData.detections[0].boundingBox.y - 10;
+        }
+        overlay["x"] = x;
+        overlay["y"] = y;
 
-    if (success) {
-        std::cout << ">> [SAVED] " << filename.toStdString() 
-                  << " | Info: " << infoText.toStdString() << std::endl;
+        root["overlay"] = overlay;
+
+        // เขียนไฟล์ .json
+        QString jsonName = QString("RESULT_%1.json").arg(timestamp);
+        QFile jsonFile(QString("%1/%2").arg(folderName).arg(jsonName));
+        
+        if (jsonFile.open(QIODevice::WriteOnly)) {
+            jsonFile.write(QJsonDocument(root).toJson());
+            jsonFile.close();
+            
+            // Log บอกตำแหน่งไฟล์ชัดเจน
+            std::cout << ">> [SAVED] Success!" << std::endl;
+            std::cout << "   IMG:  " << fullImgPath.toStdString() << std::endl;
+        }
     } else {
-        std::cerr << ">> [ERROR] Failed to save image to disk!" << std::endl;
+        std::cerr << ">> [ERROR] Failed to save image!" << std::endl;
     }
 }
 
-// --- ฟังก์ชันเช็คระบบ (เหมือนเดิม) ---
-int performSystemCheck() {
-    // ... (ละไว้ฐานที่เข้าใจ) ...
-    return 0;
-}
-
-// --- ฟังก์ชันหลัก ---
 int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
+    
+    // ลงทะเบียน Struct เพื่อส่งข้าม Thread
+    qRegisterMetaType<FrameResult>("FrameResult");
 
-    // [แก้จุดที่ 1] ลงทะเบียน Struct ให้ Qt รู้จัก (สำคัญมากเวลาส่งข้าม Thread!)
-    qRegisterMetaType<DetectionResult>("DetectionResult");
+    std::cout << "--- MagOp System Ready ---" << std::endl;
+    std::cout << "Output will be saved to: " << (QDir::homePath() + "/MagOp-project/ai_output").toStdString() << std::endl;
+    std::cout << "[s] Scan & Save | [q] Quit" << std::endl;
 
-    std::cout << "System Ready! Press 's' to Scan, 'q' to Quit." << std::endl;
-
-    // --- SETUP THREAD SYSTEM ---
+    // --- Setup AI Thread ---
     QThread* aiThread = new QThread();
     AI_Processing* aiProcessor = new AI_Processing();
-    
     aiProcessor->moveToThread(aiThread);
     aiThread->start();
-    // ---------------------------
 
     CameraHandler camera;
 
-    // 1. รับภาพจากกล้อง
+    // --- Connect Camera (Live View) ---
     QObject::connect(&camera, &CameraHandler::frameReady, [&](cv::Mat frame){
-        cv::imshow("Live Camera", frame);
+        cv::imshow("MagOp Live", frame);
         char key = (char)cv::waitKey(1);
-
+        
         if (key == 'q') {
             app.quit();
         } 
         else if (key == 's') {
-            std::cout << ">> [QUEUE] Sending frame to AI..." << std::endl;
+            std::cout << "\n>> [ACTION] Capture!" << std::endl;
+            // ส่งเข้าคิว AI
             aiProcessor->addFrameToQueue(frame);
         }
     });
 
-    // 2. รับผลลัพธ์จาก AI (ต้องแก้ตรงนี้!)
-    // [แก้จุดที่ 2] เปลี่ยนตัวรับให้เป็น DetectionResult
-    QObject::connect(aiProcessor, &AI_Processing::resultReady, aiProcessor, [&](const DetectionResult& data){
+    // --- Connect AI Result (Backend Process) ---
+    QObject::connect(aiProcessor, &AI_Processing::resultReady, aiProcessor, 
+        [&](const FrameResult& data){
         
-        // เราได้กล่อง data มาแล้ว ก็แกะของข้างในออกมาใช้งาน
-        std::cout << ">> Received Data: " << data.detectedText.toStdString() 
-                  << " [Conf: " << data.confidence << "]" << std::endl;
+        QString rawText = data.detections.empty() ? "NONE" : data.detections[0].label;
+        std::cout << "[AI Result] Found: " << rawText.toStdString() << std::endl;
 
-        // เรียกใช้ฟังก์ชัน Save โดยส่ง "รูปต้นฉบับ" และ "ข้อความ" เข้าไป
-        saveResultToDisk(data.originalImage, data.detectedText);
-
-        // (แถม) ถ้าอยากเห็นว่ามันเจอตรงไหน ลองปรินท์พิกัดออกมาดูเล่นๆ
-        std::cout << "   Bounding Box: " << data.boundingBox.x << "," << data.boundingBox.y 
-                  << " (" << data.boundingBox.width << "x" << data.boundingBox.height << ")" << std::endl;
+        // จำลอง User แก้ไขข้อความ
+        QString userText = rawText + "-VERIFIED";
+        
+        // บันทึกผลลัพธ์ลง Disk
+        finalizePrintJob(data, userText);
     });
 
-    camera.startCamera(0);
+    camera.startCamera(0); // เปิดกล้อง
 
     int ret = app.exec();
 
@@ -92,7 +132,6 @@ int main(int argc, char *argv[]) {
     aiThread->wait();
     delete aiProcessor;
     delete aiThread;
-    cv::destroyAllWindows();
     
     return ret;
 }

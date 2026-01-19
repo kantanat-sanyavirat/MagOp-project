@@ -40,9 +40,8 @@ static constexpr auto qt_meta_stringdata_ZN13AI_ProcessingE = QtMocHelpers::stri
     "AI_Processing",
     "resultReady",
     "",
-    "cv::Mat",
-    "resultImage",
-    "textResult",
+    "FrameResult",
+    "data",
     "processNextFrame"
 );
 #else  // !QT_MOC_HAS_STRINGDATA
@@ -63,13 +62,13 @@ Q_CONSTINIT static const uint qt_meta_data_ZN13AI_ProcessingE[] = {
        1,       // signalCount
 
  // signals: name, argc, parameters, tag, flags, initial metatype offsets
-       1,    2,   26,    2, 0x06,    1 /* Public */,
+       1,    1,   26,    2, 0x06,    1 /* Public */,
 
  // slots: name, argc, parameters, tag, flags, initial metatype offsets
-       6,    0,   31,    2, 0x08,    4 /* Private */,
+       5,    0,   29,    2, 0x08,    3 /* Private */,
 
  // signals: parameters
-    QMetaType::Void, 0x80000000 | 3, QMetaType::QString,    4,    5,
+    QMetaType::Void, 0x80000000 | 3,    4,
 
  // slots: parameters
     QMetaType::Void,
@@ -88,8 +87,7 @@ Q_CONSTINIT const QMetaObject AI_Processing::staticMetaObject = { {
         QtPrivate::TypeAndForceComplete<AI_Processing, std::true_type>,
         // method 'resultReady'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
-        QtPrivate::TypeAndForceComplete<cv::Mat, std::false_type>,
-        QtPrivate::TypeAndForceComplete<QString, std::false_type>,
+        QtPrivate::TypeAndForceComplete<FrameResult, std::false_type>,
         // method 'processNextFrame'
         QtPrivate::TypeAndForceComplete<void, std::false_type>
     >,
@@ -101,15 +99,27 @@ void AI_Processing::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _i
     auto *_t = static_cast<AI_Processing *>(_o);
     if (_c == QMetaObject::InvokeMetaMethod) {
         switch (_id) {
-        case 0: _t->resultReady((*reinterpret_cast< std::add_pointer_t<cv::Mat>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<QString>>(_a[2]))); break;
+        case 0: _t->resultReady((*reinterpret_cast< std::add_pointer_t<FrameResult>>(_a[1]))); break;
         case 1: _t->processNextFrame(); break;
         default: ;
+        }
+    }
+    if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
+        switch (_id) {
+        default: *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType(); break;
+        case 0:
+            switch (*reinterpret_cast<int*>(_a[1])) {
+            default: *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType(); break;
+            case 0:
+                *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType::fromType< FrameResult >(); break;
+            }
+            break;
         }
     }
     if (_c == QMetaObject::IndexOfMethod) {
         int *result = reinterpret_cast<int *>(_a[0]);
         {
-            using _q_method_type = void (AI_Processing::*)(cv::Mat , QString );
+            using _q_method_type = void (AI_Processing::*)(FrameResult );
             if (_q_method_type _q_method = &AI_Processing::resultReady; *reinterpret_cast<_q_method_type *>(_a[1]) == _q_method) {
                 *result = 0;
                 return;
@@ -143,16 +153,16 @@ int AI_Processing::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     }
     if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
         if (_id < 2)
-            *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType();
+            qt_static_metacall(this, _c, _id, _a);
         _id -= 2;
     }
     return _id;
 }
 
 // SIGNAL 0
-void AI_Processing::resultReady(cv::Mat _t1, QString _t2)
+void AI_Processing::resultReady(FrameResult _t1)
 {
-    void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t1))), const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t2))) };
+    void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t1))) };
     QMetaObject::activate(this, &staticMetaObject, 0, _a);
 }
 QT_WARNING_POP

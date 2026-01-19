@@ -1,69 +1,61 @@
-#include "ai_processing.h"
+#include "ai_processing.h" // CMake รู้จัก include path แล้ว ใส่ชื่อไฟล์ได้เลย
 #include <QThread>
+#include <QDateTime>
 #include <iostream>
 
-AI_Processing::AI_Processing(QObject *parent) : QObject(parent)
-{
+AI_Processing::AI_Processing(QObject *parent) : QObject(parent) {
     isBusy = false;
 }
 
-void AI_Processing::processNextFrame()
-{
-    // --- 1. รับงานและล็อค (เหมือนเดิม) ---
+void AI_Processing::addFrameToQueue(const cv::Mat &frame) {
+    QMutexLocker locker(&mutex);
+    frameQueue.push(frame.clone());
+    // กระตุ้นให้ทำงานใน Thread ตัวเอง
+    QMetaObject::invokeMethod(this, "processNextFrame", Qt::QueuedConnection);
+}
+
+void AI_Processing::processNextFrame() {
     mutex.lock();
     if (frameQueue.empty() || isBusy) {
         mutex.unlock();
         return;
     }
-
     cv::Mat inputFrame = frameQueue.front();
     frameQueue.pop();
     isBusy = true;
     mutex.unlock();
 
     // ==========================================
-    // [ZONE AI] (Simulation from Time)
+    // [ZONE AI SIMULATION]
     // ==========================================
-    std::cout << "[AI] Simulating objects from time..." << std::endl;
-    QThread::msleep(500); // แกล้งทำเป็นคิดนาน
+    std::cout << "[AI] Analyzing frame..." << std::endl;
+    QThread::msleep(500); // จำลองว่าคิดหนัก
 
     FrameResult result;
     result.originalImage = inputFrame;
     
-    // ดึงเวลาปัจจุบัน
     QDateTime now = QDateTime::currentDateTime();
     result.timestamp = now.toString("HH:mm:ss");
 
-    // สร้างข้อมูลตามตัวเลขเวลา (เช่น "103045")
+    // จำลองการเจอวัตถุตามตัวเลขเวลา (เช่น 134510 -> เจอ 6 ตัว)
     QString simulateText = now.toString("HHmmss");
-    
-    int startX = 50;  
-    int startY = 100; 
-    int width = 40;   
-    int height = 60;  
-    int gap = 10;     
+    int startX = 50;
 
     for (int i = 0; i < simulateText.length(); i++) {
         DetectedObject obj;
+        obj.label = QString(simulateText.at(i));
         
-        // Label คือตัวเลขแต่ละหลัก
-        obj.label = QString(simulateText.at(i)); 
-
-        // คำนวณพิกัด X ไม่ให้ทับกัน
-        int currentX = startX + (i * (width + gap));
-        obj.boundingBox = cv::Rect(currentX, startY, width, height);
-
-        // สุ่มความมั่นใจ 0.80 - 0.99
-        obj.confidence = 0.80f + (float)(rand() % 20) / 100.0f;
-
+        // ขยับกล่องไปทางขวาเรื่อยๆ
+        obj.boundingBox = cv::Rect(startX + (i * 50), 100, 40, 60);
+        obj.confidence = 0.85f + (float)(rand() % 15) / 100.0f;
+        
         result.detections.push_back(obj);
     }
     // ==========================================
 
-    // --- 2. ส่งงาน  ---
     emit resultReady(result);
 
-    // --- 3. เช็คงานถัดไป (อย่าลืมตรงนี้!) ---
+    // เช็คงานถัดไป
     mutex.lock();
     isBusy = false;
     bool hasMore = !frameQueue.empty();

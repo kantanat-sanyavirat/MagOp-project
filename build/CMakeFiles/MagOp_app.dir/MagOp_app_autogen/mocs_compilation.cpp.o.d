@@ -487,6 +487,8 @@ CMakeFiles/MagOp_app.dir/MagOp_app_autogen/mocs_compilation.cpp.o: \
  /usr/include/opencv4/opencv2/video.hpp \
  /usr/include/opencv4/opencv2/video/tracking.hpp \
  /usr/include/opencv4/opencv2/video/background_segm.hpp \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/QString \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/qstring.h \
  /usr/include/aarch64-linux-gnu/qt6/QtCore/qtmochelpers.h \
  /home/kantanat/MagOp-project/build/MagOp_app_autogen/6YEA5652QU/moc_camera_handler.cpp \
  /home/kantanat/MagOp-project/build/MagOp_app_autogen/6YEA5652QU/../../../include/camera_handler.h \
