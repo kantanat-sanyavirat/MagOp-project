@@ -6,87 +6,88 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <iostream>
+#include <string>
 
-// ไม่ต้องใส่ path ยาวๆ เพราะ CMake จัดการให้แล้ว
 #include "camera_handler.h"
 #include "ai_processing.h"
 
-// -----------------------------------------------------------------
-// [BACKEND] ฟังก์ชันบันทึกผลลัพธ์ (ใช้ Path แบบระบุเต็ม เพื่อความชัวร์)
-// -----------------------------------------------------------------
-void finalizePrintJob(const FrameResult& rawData, const QString& userEditedText) {
-    
-    // 1. ระบุตำแหน่งโฟลเดอร์ output โดยอ้างอิงจาก Home Directory ของ User
-    // ผลลัพธ์จะได้ประมาณ: "/home/kantanat/MagOp-project/ai_output"
-    QString homePath = QDir::homePath();
-    QString folderName = homePath + "/MagOp-project/ai_output";
-    
-    // 2. สร้างโฟลเดอร์ถ้ายังไม่มี
-    QDir dir(folderName);
-    if (!dir.exists()) {
-        if (dir.mkpath(".")) {
-            std::cout << ">> [INFO] Created output folder: " << folderName.toStdString() << std::endl;
-        } else {
-            std::cerr << ">> [ERROR] Could not create folder: " << folderName.toStdString() << std::endl;
-            return; // หยุดทำงานถ้าสร้างโฟลเดอร์ไม่ได้
-        }
+// =========================================================
+// [MODULE] Image Processing Tools (เครื่องมือแต่งภาพ)
+// =========================================================
+namespace ImageUtils {
+    // ปรับความสว่าง (beta) และ contrast (alpha)
+    cv::Mat adjustBrightness(const cv::Mat& source, double alpha, int beta) {
+        cv::Mat newImage;
+        source.convertTo(newImage, -1, alpha, beta);
+        return newImage;
     }
 
-    // 3. ตั้งชื่อไฟล์ตามเวลา
-    QString timestamp = QDateTime::currentDateTime().toString("yyyyMMdd_HHmmss_zzz");
-    QString imgName = QString("RESULT_%1.jpg").arg(timestamp);
-    QString fullImgPath = QString("%1/%2").arg(folderName).arg(imgName);
-    
-    // 4. บันทึกรูปต้นฉบับ (Clean Image)
-    if (cv::imwrite(fullImgPath.toStdString(), rawData.originalImage)) {
-        
-        // 5. บันทึกข้อมูล JSON (Overlay Data) คู่กัน
-        QJsonObject root;
-        root["image_file"] = imgName;
-        root["timestamp"] = rawData.timestamp;
-
-        QJsonObject overlay;
-        overlay["text_content"] = userEditedText;
-        
-        // หาพิกัดที่จะวางข้อความ
-        int x = 50, y = 50;
-        if (!rawData.detections.empty()) {
-            x = rawData.detections[0].boundingBox.x;
-            y = rawData.detections[0].boundingBox.y - 10;
-        }
-        overlay["x"] = x;
-        overlay["y"] = y;
-
-        root["overlay"] = overlay;
-
-        // เขียนไฟล์ .json
-        QString jsonName = QString("RESULT_%1.json").arg(timestamp);
-        QFile jsonFile(QString("%1/%2").arg(folderName).arg(jsonName));
-        
-        if (jsonFile.open(QIODevice::WriteOnly)) {
-            jsonFile.write(QJsonDocument(root).toJson());
-            jsonFile.close();
-            
-            // Log บอกตำแหน่งไฟล์ชัดเจน
-            std::cout << ">> [SAVED] Success!" << std::endl;
-            std::cout << "   IMG:  " << fullImgPath.toStdString() << std::endl;
-        }
-    } else {
-        std::cerr << ">> [ERROR] Failed to save image!" << std::endl;
+    // ลด Noise
+    cv::Mat denoise(const cv::Mat& source) {
+        cv::Mat newImage;
+        cv::GaussianBlur(source, newImage, cv::Size(3, 3), 0);
+        return newImage;
     }
 }
 
+// =========================================================
+// [MODULE] Export Manager (จัดการการบันทึกและส่งออก)
+// =========================================================
+void saveAndExport(const cv::Mat& finalImage, const QString& finalText, const QString& timestamp) {
+    
+    QString homePath = QDir::homePath();
+    
+    // 1. กำหนด Path ภายในเครื่อง (Local Storage)
+    QString localFolder = homePath + "/MagOp-project/ai_output";
+    QDir().mkpath(localFolder);
+
+    // 2. กำหนด Path ของ Flash Drive (จำลอง)
+    // ในเครื่องจริงจะเป็น "/media/pi/YOUR_USB_NAME"
+    QString usbFolder = homePath + "/MagOp-project/Fake_FlashDrive"; 
+    QDir().mkpath(usbFolder); 
+
+    // --- ตั้งชื่อไฟล์ ---
+    QString imgName = QString("IMG_%1.jpg").arg(timestamp);
+    QString jsonName = QString("DATA_%1.json").arg(timestamp);
+
+    // --- A. บันทึกรูปลงเครื่อง ---
+    QString localImgPath = localFolder + "/" + imgName;
+    cv::imwrite(localImgPath.toStdString(), finalImage);
+
+    // --- B. บันทึก JSON ลงเครื่อง ---
+    QString localJsonPath = localFolder + "/" + jsonName;
+    QJsonObject root;
+    root["image_file"] = imgName;
+    root["text_content"] = finalText;
+    root["timestamp"] = timestamp;
+
+    QFile jsonFile(localJsonPath);
+    if (jsonFile.open(QIODevice::WriteOnly)) {
+        jsonFile.write(QJsonDocument(root).toJson());
+        jsonFile.close();
+    }
+
+    // --- C. ส่งออกไป Flash Drive (Copy Files) ---
+    std::cout << ">> [EXPORT] Copying to Flash Drive..." << std::endl;
+    
+    QFile::copy(localImgPath, usbFolder + "/" + imgName);
+    QFile::copy(localJsonPath, usbFolder + "/" + jsonName);
+
+    std::cout << "   -> Local: " << localFolder.toStdString() << std::endl;
+    std::cout << "   -> USB:   " << usbFolder.toStdString() << std::endl;
+    std::cout << "   -> Status: EXPORT COMPLETE ✅" << std::endl;
+}
+
+// =========================================================
+// [MAIN]
+// =========================================================
 int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
-    
-    // ลงทะเบียน Struct เพื่อส่งข้าม Thread
     qRegisterMetaType<FrameResult>("FrameResult");
 
-    std::cout << "--- MagOp System Ready ---" << std::endl;
-    std::cout << "Output will be saved to: " << (QDir::homePath() + "/MagOp-project/ai_output").toStdString() << std::endl;
-    std::cout << "[s] Scan & Save | [q] Quit" << std::endl;
+    std::cout << "--- MagOp Interactive System ---" << std::endl;
+    std::cout << "[s] Scan | [q] Quit" << std::endl;
 
-    // --- Setup AI Thread ---
     QThread* aiThread = new QThread();
     AI_Processing* aiProcessor = new AI_Processing();
     aiProcessor->moveToThread(aiThread);
@@ -94,40 +95,83 @@ int main(int argc, char *argv[]) {
 
     CameraHandler camera;
 
-    // --- Connect Camera (Live View) ---
+    // Connect Camera
     QObject::connect(&camera, &CameraHandler::frameReady, [&](cv::Mat frame){
-        cv::imshow("MagOp Live", frame);
+        cv::imshow("Live View", frame);
         char key = (char)cv::waitKey(1);
-        
-        if (key == 'q') {
-            app.quit();
-        } 
+        if (key == 'q') app.quit();
         else if (key == 's') {
-            std::cout << "\n>> [ACTION] Capture!" << std::endl;
-            // ส่งเข้าคิว AI
+            std::cout << "\n>> [ACTION] Capturing & Processing..." << std::endl;
             aiProcessor->addFrameToQueue(frame);
         }
     });
 
-    // --- Connect AI Result (Backend Process) ---
+    // Connect AI Result -> เข้าสู่โหมด Review
     QObject::connect(aiProcessor, &AI_Processing::resultReady, aiProcessor, 
-        [&](const FrameResult& data){
+        [&](const FrameResult& resultData){
         
-        QString rawText = data.detections.empty() ? "NONE" : data.detections[0].label;
-        std::cout << "[AI Result] Found: " << rawText.toStdString() << std::endl;
+        // 1. เตรียมข้อมูลเริ่มต้น (Draft)
+        cv::Mat currentImage = resultData.originalImage.clone();
+        QString currentText = resultData.detections.empty() ? "" : resultData.detections[0].label;
+        
+        bool confirmed = false;
 
-        // จำลอง User แก้ไขข้อความ
-        QString userText = rawText + "-VERIFIED";
+        // 2. เข้าลูป "หน้าจอ UI Review" (จำลองด้วย while loop ใน console)
+        while (!confirmed) {
+            std::cout << "\n---------------------------------" << std::endl;
+            std::cout << "      REVIEW RESULT (UI)         " << std::endl;
+            std::cout << "---------------------------------" << std::endl;
+            std::cout << "Text from AI: [" << currentText.toStdString() << "]" << std::endl;
+            std::cout << "---------------------------------" << std::endl;
+            std::cout << " [1] OK -> Save & Export to USB" << std::endl;
+            std::cout << " [2] Edit: Brightness (+Light)" << std::endl;
+            std::cout << " [3] Edit: Denoise (Fix Grain)" << std::endl;
+            std::cout << " [4] Edit: Manual Text Input" << std::endl;
+            std::cout << " [0] Discard (Cancel)" << std::endl;
+            std::cout << "Select option: ";
+
+            int choice;
+            std::cin >> choice; // รอ User พิมพ์เลือก (จำลองการกดปุ่ม)
+
+            if (choice == 1) {
+                // ยืนยัน -> บันทึก
+                saveAndExport(currentImage, currentText, resultData.timestamp);
+                confirmed = true;
+            }
+            else if (choice == 2) {
+                // ปรับแสง
+                std::cout << ">> Adjusting brightness..." << std::endl;
+                currentImage = ImageUtils::adjustBrightness(currentImage, 1.2, 30); // เพิ่มแสง
+                cv::imshow("Preview Edit", currentImage); // โชว์รูปที่แก้แล้ว
+                cv::waitKey(500);
+            }
+            else if (choice == 3) {
+                // ลด Noise
+                std::cout << ">> Reducing noise..." << std::endl;
+                currentImage = ImageUtils::denoise(currentImage);
+                cv::imshow("Preview Edit", currentImage);
+                cv::waitKey(500);
+            }
+            else if (choice == 4) {
+                // พิมพ์เอง
+                std::cout << "Enter new text: ";
+                std::string input;
+                std::cin >> input;
+                currentText = QString::fromStdString(input);
+            }
+            else if (choice == 0) {
+                std::cout << ">> Discarded." << std::endl;
+                confirmed = true; // ออกจากลูปโดยไม่บันทึก
+            }
+        }
         
-        // บันทึกผลลัพธ์ลง Disk
-        finalizePrintJob(data, userText);
+        cv::destroyWindow("Preview Edit"); // ปิดหน้าต่างพรีวิว (ถ้ามี)
+        std::cout << "\n>> Ready for next scan..." << std::endl;
     });
 
-    camera.startCamera(0); // เปิดกล้อง
-
+    camera.startCamera(0);
     int ret = app.exec();
 
-    // Cleanup
     aiThread->quit();
     aiThread->wait();
     delete aiProcessor;
