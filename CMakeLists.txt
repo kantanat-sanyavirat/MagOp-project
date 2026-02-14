@@ -14,7 +14,8 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-# 1. Find Qt6 (Added Gui component for QImage)
+# 1. Find Qt6
+# (หมายเหตุ: ถ้าบน Pi หา Qt6 ไม่เจอ ให้เปลี่ยนเลข 6 เป็น 5 ตรงนี้และข้างล่างครับ)
 find_package(Qt6 COMPONENTS Widgets Core Gui REQUIRED)
 
 # 2. Find OpenCV
@@ -40,27 +41,34 @@ endif()
 include_directories(include)             # Local headers
 include_directories(${ONNX_ROOT}/include) # ONNX headers
 
-# 4. Source files
-# Gather all .cpp files in src/ folder
-file(GLOB SOURCES "src/*.cpp")
-# Gather all .h files in include/ folder (optional, good for IDEs)
-file(GLOB HEADERS "include/*.h")
+# 4. Source files setup (MANUAL LIST)
+# เปลี่ยนจาก GLOB มาเป็นการระบุชื่อไฟล์ เพื่อเลือกปิด backend_controller ได้
+set(SOURCES
+    main.cpp
+    src/camera_handler.cpp
+    src/ai_processing.cpp
+    # src/backend_controller.cpp  <-- ปิดไว้ชั่วคราว (Uncomment เมื่อทำ UI จริง)
+)
+
+set(HEADERS
+    include/camera_handler.h
+    include/ai_processing.h
+    # include/backend_controller.h <-- ปิดไว้ชั่วคราว
+)
 
 # 5. Executable target
-# [IMPORTANT] Added main.cpp explicitly because it is outside src/
-add_executable(MagOp_app main.cpp ${SOURCES} ${HEADERS})
+add_executable(MagOp_app ${SOURCES} ${HEADERS})
 
 # 6. Link libraries
 target_link_libraries(MagOp_app PRIVATE
     Qt6::Widgets      
     Qt6::Core
-    Qt6::Gui          # Required for QImage processing
+    Qt6::Gui          
     ${OpenCV_LIBS}    
     ${ONNX_LIB}       
 )
 
 # 7. [LINUX/PI FIX] RPATH Settings
-# This tells the executable to look for .so files in the ./lib folder
 if(UNIX AND NOT APPLE)
     set_target_properties(MagOp_app PROPERTIES
         BUILD_WITH_INSTALL_RPATH TRUE

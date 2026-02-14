@@ -107,24 +107,10 @@ CMakeFiles/MagOp_app.dir/main.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/MagOp_app.dir/main.cpp.s"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/kantanat/MagOp-project/main.cpp -o CMakeFiles/MagOp_app.dir/main.cpp.s
 
-CMakeFiles/MagOp_app.dir/src/ai_processing.cpp.o: CMakeFiles/MagOp_app.dir/flags.make
-CMakeFiles/MagOp_app.dir/src/ai_processing.cpp.o: /home/kantanat/MagOp-project/src/ai_processing.cpp
-CMakeFiles/MagOp_app.dir/src/ai_processing.cpp.o: CMakeFiles/MagOp_app.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/kantanat/MagOp-project/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/MagOp_app.dir/src/ai_processing.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/MagOp_app.dir/src/ai_processing.cpp.o -MF CMakeFiles/MagOp_app.dir/src/ai_processing.cpp.o.d -o CMakeFiles/MagOp_app.dir/src/ai_processing.cpp.o -c /home/kantanat/MagOp-project/src/ai_processing.cpp
-
-CMakeFiles/MagOp_app.dir/src/ai_processing.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/MagOp_app.dir/src/ai_processing.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/kantanat/MagOp-project/src/ai_processing.cpp > CMakeFiles/MagOp_app.dir/src/ai_processing.cpp.i
-
-CMakeFiles/MagOp_app.dir/src/ai_processing.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/MagOp_app.dir/src/ai_processing.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/kantanat/MagOp-project/src/ai_processing.cpp -o CMakeFiles/MagOp_app.dir/src/ai_processing.cpp.s
-
 CMakeFiles/MagOp_app.dir/src/camera_handler.cpp.o: CMakeFiles/MagOp_app.dir/flags.make
 CMakeFiles/MagOp_app.dir/src/camera_handler.cpp.o: /home/kantanat/MagOp-project/src/camera_handler.cpp
 CMakeFiles/MagOp_app.dir/src/camera_handler.cpp.o: CMakeFiles/MagOp_app.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/kantanat/MagOp-project/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/MagOp_app.dir/src/camera_handler.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/kantanat/MagOp-project/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/MagOp_app.dir/src/camera_handler.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/MagOp_app.dir/src/camera_handler.cpp.o -MF CMakeFiles/MagOp_app.dir/src/camera_handler.cpp.o.d -o CMakeFiles/MagOp_app.dir/src/camera_handler.cpp.o -c /home/kantanat/MagOp-project/src/camera_handler.cpp
 
 CMakeFiles/MagOp_app.dir/src/camera_handler.cpp.i: cmake_force
@@ -135,20 +121,34 @@ CMakeFiles/MagOp_app.dir/src/camera_handler.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/MagOp_app.dir/src/camera_handler.cpp.s"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/kantanat/MagOp-project/src/camera_handler.cpp -o CMakeFiles/MagOp_app.dir/src/camera_handler.cpp.s
 
+CMakeFiles/MagOp_app.dir/src/ai_processing.cpp.o: CMakeFiles/MagOp_app.dir/flags.make
+CMakeFiles/MagOp_app.dir/src/ai_processing.cpp.o: /home/kantanat/MagOp-project/src/ai_processing.cpp
+CMakeFiles/MagOp_app.dir/src/ai_processing.cpp.o: CMakeFiles/MagOp_app.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/kantanat/MagOp-project/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/MagOp_app.dir/src/ai_processing.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/MagOp_app.dir/src/ai_processing.cpp.o -MF CMakeFiles/MagOp_app.dir/src/ai_processing.cpp.o.d -o CMakeFiles/MagOp_app.dir/src/ai_processing.cpp.o -c /home/kantanat/MagOp-project/src/ai_processing.cpp
+
+CMakeFiles/MagOp_app.dir/src/ai_processing.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/MagOp_app.dir/src/ai_processing.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/kantanat/MagOp-project/src/ai_processing.cpp > CMakeFiles/MagOp_app.dir/src/ai_processing.cpp.i
+
+CMakeFiles/MagOp_app.dir/src/ai_processing.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/MagOp_app.dir/src/ai_processing.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/kantanat/MagOp-project/src/ai_processing.cpp -o CMakeFiles/MagOp_app.dir/src/ai_processing.cpp.s
+
 # Object files for target MagOp_app
 MagOp_app_OBJECTS = \
 "CMakeFiles/MagOp_app.dir/MagOp_app_autogen/mocs_compilation.cpp.o" \
 "CMakeFiles/MagOp_app.dir/main.cpp.o" \
-"CMakeFiles/MagOp_app.dir/src/ai_processing.cpp.o" \
-"CMakeFiles/MagOp_app.dir/src/camera_handler.cpp.o"
+"CMakeFiles/MagOp_app.dir/src/camera_handler.cpp.o" \
+"CMakeFiles/MagOp_app.dir/src/ai_processing.cpp.o"
 
 # External object files for target MagOp_app
 MagOp_app_EXTERNAL_OBJECTS =
 
 /home/kantanat/MagOp-project/MagOp_app: CMakeFiles/MagOp_app.dir/MagOp_app_autogen/mocs_compilation.cpp.o
 /home/kantanat/MagOp-project/MagOp_app: CMakeFiles/MagOp_app.dir/main.cpp.o
-/home/kantanat/MagOp-project/MagOp_app: CMakeFiles/MagOp_app.dir/src/ai_processing.cpp.o
 /home/kantanat/MagOp-project/MagOp_app: CMakeFiles/MagOp_app.dir/src/camera_handler.cpp.o
+/home/kantanat/MagOp-project/MagOp_app: CMakeFiles/MagOp_app.dir/src/ai_processing.cpp.o
 /home/kantanat/MagOp-project/MagOp_app: CMakeFiles/MagOp_app.dir/build.make
 /home/kantanat/MagOp-project/MagOp_app: CMakeFiles/MagOp_app.dir/compiler_depend.ts
 /home/kantanat/MagOp-project/MagOp_app: /usr/lib/aarch64-linux-gnu/libQt6Widgets.so.6.8.2
