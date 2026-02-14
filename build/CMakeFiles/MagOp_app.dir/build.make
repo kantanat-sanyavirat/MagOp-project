@@ -135,12 +135,42 @@ CMakeFiles/MagOp_app.dir/src/ai_processing.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/MagOp_app.dir/src/ai_processing.cpp.s"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/kantanat/MagOp-project/src/ai_processing.cpp -o CMakeFiles/MagOp_app.dir/src/ai_processing.cpp.s
 
+CMakeFiles/MagOp_app.dir/src/backend_controller.cpp.o: CMakeFiles/MagOp_app.dir/flags.make
+CMakeFiles/MagOp_app.dir/src/backend_controller.cpp.o: /home/kantanat/MagOp-project/src/backend_controller.cpp
+CMakeFiles/MagOp_app.dir/src/backend_controller.cpp.o: CMakeFiles/MagOp_app.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/kantanat/MagOp-project/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/MagOp_app.dir/src/backend_controller.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/MagOp_app.dir/src/backend_controller.cpp.o -MF CMakeFiles/MagOp_app.dir/src/backend_controller.cpp.o.d -o CMakeFiles/MagOp_app.dir/src/backend_controller.cpp.o -c /home/kantanat/MagOp-project/src/backend_controller.cpp
+
+CMakeFiles/MagOp_app.dir/src/backend_controller.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/MagOp_app.dir/src/backend_controller.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/kantanat/MagOp-project/src/backend_controller.cpp > CMakeFiles/MagOp_app.dir/src/backend_controller.cpp.i
+
+CMakeFiles/MagOp_app.dir/src/backend_controller.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/MagOp_app.dir/src/backend_controller.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/kantanat/MagOp-project/src/backend_controller.cpp -o CMakeFiles/MagOp_app.dir/src/backend_controller.cpp.s
+
+CMakeFiles/MagOp_app.dir/ui/mainwindow.cpp.o: CMakeFiles/MagOp_app.dir/flags.make
+CMakeFiles/MagOp_app.dir/ui/mainwindow.cpp.o: /home/kantanat/MagOp-project/ui/mainwindow.cpp
+CMakeFiles/MagOp_app.dir/ui/mainwindow.cpp.o: CMakeFiles/MagOp_app.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/kantanat/MagOp-project/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/MagOp_app.dir/ui/mainwindow.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/MagOp_app.dir/ui/mainwindow.cpp.o -MF CMakeFiles/MagOp_app.dir/ui/mainwindow.cpp.o.d -o CMakeFiles/MagOp_app.dir/ui/mainwindow.cpp.o -c /home/kantanat/MagOp-project/ui/mainwindow.cpp
+
+CMakeFiles/MagOp_app.dir/ui/mainwindow.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/MagOp_app.dir/ui/mainwindow.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/kantanat/MagOp-project/ui/mainwindow.cpp > CMakeFiles/MagOp_app.dir/ui/mainwindow.cpp.i
+
+CMakeFiles/MagOp_app.dir/ui/mainwindow.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/MagOp_app.dir/ui/mainwindow.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/kantanat/MagOp-project/ui/mainwindow.cpp -o CMakeFiles/MagOp_app.dir/ui/mainwindow.cpp.s
+
 # Object files for target MagOp_app
 MagOp_app_OBJECTS = \
 "CMakeFiles/MagOp_app.dir/MagOp_app_autogen/mocs_compilation.cpp.o" \
 "CMakeFiles/MagOp_app.dir/main.cpp.o" \
 "CMakeFiles/MagOp_app.dir/src/camera_handler.cpp.o" \
-"CMakeFiles/MagOp_app.dir/src/ai_processing.cpp.o"
+"CMakeFiles/MagOp_app.dir/src/ai_processing.cpp.o" \
+"CMakeFiles/MagOp_app.dir/src/backend_controller.cpp.o" \
+"CMakeFiles/MagOp_app.dir/ui/mainwindow.cpp.o"
 
 # External object files for target MagOp_app
 MagOp_app_EXTERNAL_OBJECTS =
@@ -149,6 +179,8 @@ MagOp_app_EXTERNAL_OBJECTS =
 /home/kantanat/MagOp-project/MagOp_app: CMakeFiles/MagOp_app.dir/main.cpp.o
 /home/kantanat/MagOp-project/MagOp_app: CMakeFiles/MagOp_app.dir/src/camera_handler.cpp.o
 /home/kantanat/MagOp-project/MagOp_app: CMakeFiles/MagOp_app.dir/src/ai_processing.cpp.o
+/home/kantanat/MagOp-project/MagOp_app: CMakeFiles/MagOp_app.dir/src/backend_controller.cpp.o
+/home/kantanat/MagOp-project/MagOp_app: CMakeFiles/MagOp_app.dir/ui/mainwindow.cpp.o
 /home/kantanat/MagOp-project/MagOp_app: CMakeFiles/MagOp_app.dir/build.make
 /home/kantanat/MagOp-project/MagOp_app: CMakeFiles/MagOp_app.dir/compiler_depend.ts
 /home/kantanat/MagOp-project/MagOp_app: /usr/lib/aarch64-linux-gnu/libQt6Widgets.so.6.8.2
@@ -213,7 +245,7 @@ MagOp_app_EXTERNAL_OBJECTS =
 /home/kantanat/MagOp-project/MagOp_app: /usr/lib/aarch64-linux-gnu/libopencv_imgproc.so.4.10.0
 /home/kantanat/MagOp-project/MagOp_app: /usr/lib/aarch64-linux-gnu/libopencv_core.so.4.10.0
 /home/kantanat/MagOp-project/MagOp_app: CMakeFiles/MagOp_app.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/kantanat/MagOp-project/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Linking CXX executable /home/kantanat/MagOp-project/MagOp_app"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/kantanat/MagOp-project/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Linking CXX executable /home/kantanat/MagOp-project/MagOp_app"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/MagOp_app.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

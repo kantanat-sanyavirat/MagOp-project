@@ -3,63 +3,66 @@
 
 #include <QObject>
 #include <QImage>
+#include <QThread>
 #include <QDir>
-#include <QJsonObject>
 #include <opencv2/opencv.hpp>
-#include "ai_processing.h"
-#include "camera_handler.h"
 
-// Class นี้จะเป็น "สมอง" ของระบบที่ Frontend จะมาคุยด้วย
+// Include ไฟล์ลูกน้อง
+#include "camera_handler.h"
+#include "ai_processing.h"
+
 class BackendController : public QObject
 {
     Q_OBJECT
 public:
     explicit BackendController(QObject *parent = nullptr);
     ~BackendController();
-
-    // เริ่มระบบ
-    void startSystem();
+    
+    // ฟังก์ชันเริ่มระบบ
+    void start();
 
 public slots:
-    // --- คำสั่งที่รับจากปุ่มบนหน้าจอ (Frontend -> Backend) ---
-    void captureImage();                    // ปุ่ม Scan
-    void confirmSave();                     // ปุ่ม Save
-    void discardImage();                    // ปุ่ม Discard
+    // --- รับคำสั่งจากหน้าจอ (Frontend) ---
+    void capture();                     // กดปุ่ม Scan
+    void save(QString userText);        // กดปุ่ม Save (รับข้อความที่แก้แล้ว)
+    void discard();                     // กดปุ่ม Discard
     
-    // ปุ่มปรับแต่งภาพ
-    void adjustImage(double brightness, double contrast, bool denoise);
+    // ปรับแต่งภาพ (รับค่า Brightness และปุ่ม Denoise)
+    void adjustImage(int brightnessStep, bool denoise); 
     
-    // แก้ไขข้อความ
-    void updateText(const QString &newText);
-
-    // --- ส่วนจัดการไฟล์ (Delete One by One) ---
-    void refreshFileList();                 // ขอรายชื่อไฟล์ทั้งหมด
-    void deleteFile(const QString &fileName); // สั่งลบไฟล์ระบุชื่อ (เช่น "RESULT_2025...jpg")
+    // จัดการไฟล์
+    void deleteFile(const QString &fileName);
+    void refreshFileList();
 
 signals:
-    // --- สัญญาณส่งกลับไปบอกหน้าจอ (Backend -> Frontend) ---
-    void liveFrameReady(QImage img);        // ส่งภาพสดไปโชว์
-    void reviewReady(QImage img, QString text); // เข้าโหมด Review พร้อมรูปและข้อความ
-    void fileListUpdated(QStringList files); // ส่งรายชื่อไฟล์กลับไปให้ List View
-    void statusMessage(QString msg);        // ส่งข้อความแจ้งเตือน (เช่น "Saved!", "Deleted!")
+    // --- ส่งข้อมูลไปหน้าจอ (Frontend) ---
+    void frameReady(QImage img);                 // ส่งภาพสด (Live View)
+    void reviewReady(QImage img, QString text);  // ส่งภาพนิ่ง (Review Mode)
+    void fileListUpdated(QStringList files);     // ส่งรายชื่อไฟล์ (Gallery)
+    void statusMessage(QString msg);             // ส่งข้อความแจ้งเตือน
 
 private slots:
+    // Slots ภายในสำหรับคุยกับลูกน้อง
     void processCameraFrame(cv::Mat frame);
     void handleAiResult(FrameResult result);
 
 private:
+    // ลูกน้องทั้งสอง
     CameraHandler *camera;
     QThread *aiThread;
     AI_Processing *aiProcessor;
 
-    // เก็บสถานะปัจจุบันระหว่างรอ User ยืนยัน
-    cv::Mat currentCvImage;     // รูปต้นฉบับ (OpenCV)
-    cv::Mat currentEditedImage; // รูปที่แต่งแล้ว
-    QString currentText;        // ข้อความ
-    QString currentTimestamp;   // เวลา
-    int currentX, currentY;     // พิกัด
+    // ตัวแปรเก็บสถานะภาพ
+    cv::Mat currentLiveFrame;   // ภาพล่าสุดจากกล้อง (รอถูก capture)
+    cv::Mat originalCvImage;    // ภาพต้นฉบับที่ถ่ายได้
+    cv::Mat currentEditedImage; // ภาพที่กำลังแต่งอยู่
     
-    // Helper แปลง OpenCV -> QImage เพื่อโชว์บน Qt
+    // ข้อมูลประกอบ
+    QString currentTimestamp;
+    QString currentText;
+    int currentX, currentY;
+
+    // ฟังก์ชันช่วยแปลงภาพ OpenCV -> Qt
     QImage matToQImage(const cv::Mat &mat);
     void saveToDiskAndUsb();
 };

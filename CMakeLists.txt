@@ -2,7 +2,7 @@
 cmake_minimum_required(VERSION 3.16)
 project(MagOp LANGUAGES CXX) 
 
-# Set Output Directory to root (same as source)
+# Set Output Directory to root
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR})
 
 # Require C++17
@@ -15,7 +15,6 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
 # 1. Find Qt6
-# (หมายเหตุ: ถ้าบน Pi หา Qt6 ไม่เจอ ให้เปลี่ยนเลข 6 เป็น 5 ตรงนี้และข้างล่างครับ)
 find_package(Qt6 COMPONENTS Widgets Core Gui REQUIRED)
 
 # 2. Find OpenCV
@@ -23,13 +22,7 @@ find_package(OpenCV REQUIRED)
 
 # 3. ONNX Runtime Configuration
 set(ONNX_ROOT "${CMAKE_SOURCE_DIR}/lib/onnxruntime")
-
-# Find ONNX Library
-find_library(ONNX_LIB 
-    NAMES onnxruntime 
-    PATHS ${ONNX_ROOT}/lib 
-    NO_DEFAULT_PATH
-)
+find_library(ONNX_LIB NAMES onnxruntime PATHS ${ONNX_ROOT}/lib NO_DEFAULT_PATH)
 
 if(NOT ONNX_LIB)
     message(WARNING "ONNX Runtime library not found in ${ONNX_ROOT}/lib")
@@ -39,21 +32,23 @@ endif()
 
 # Include Headers
 include_directories(include)             # Local headers
+include_directories(ui)                  # [NEW] UI headers
 include_directories(${ONNX_ROOT}/include) # ONNX headers
 
 # 4. Source files setup (MANUAL LIST)
-# เปลี่ยนจาก GLOB มาเป็นการระบุชื่อไฟล์ เพื่อเลือกปิด backend_controller ได้
 set(SOURCES
     main.cpp
     src/camera_handler.cpp
     src/ai_processing.cpp
-    # src/backend_controller.cpp  <-- ปิดไว้ชั่วคราว (Uncomment เมื่อทำ UI จริง)
+    src/backend_controller.cpp
+    ui/mainwindow.cpp          # [NEW] อยู่ในโฟลเดอร์ ui
 )
 
 set(HEADERS
     include/camera_handler.h
     include/ai_processing.h
-    # include/backend_controller.h <-- ปิดไว้ชั่วคราว
+    include/backend_controller.h
+    ui/mainwindow.h            # [NEW] อยู่ในโฟลเดอร์ ui
 )
 
 # 5. Executable target

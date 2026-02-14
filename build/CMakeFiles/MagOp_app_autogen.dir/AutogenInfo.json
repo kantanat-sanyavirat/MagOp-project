@@ -243,9 +243,21 @@
 			null
 		],
 		[
+			"/home/kantanat/MagOp-project/include/backend_controller.h",
+			"MU",
+			"6YEA5652QU/moc_backend_controller.cpp",
+			null
+		],
+		[
 			"/home/kantanat/MagOp-project/include/camera_handler.h",
 			"MU",
 			"6YEA5652QU/moc_camera_handler.cpp",
+			null
+		],
+		[
+			"/home/kantanat/MagOp-project/ui/mainwindow.h",
+			"MU",
+			"UYX5XTB5RZ/moc_mainwindow.cpp",
 			null
 		]
 	],
@@ -263,6 +275,7 @@
 	"MOC_INCLUDES" : 
 	[
 		"/home/kantanat/MagOp-project/include",
+		"/home/kantanat/MagOp-project/ui",
 		"/home/kantanat/MagOp-project/lib/onnxruntime/include",
 		"/usr/include/aarch64-linux-gnu/qt6/QtWidgets",
 		"/usr/include/aarch64-linux-gnu/qt6",
@@ -313,7 +326,9 @@
 	[
 		[ "/home/kantanat/MagOp-project/main.cpp", "MU", null ],
 		[ "/home/kantanat/MagOp-project/src/ai_processing.cpp", "MU", null ],
-		[ "/home/kantanat/MagOp-project/src/camera_handler.cpp", "MU", null ]
+		[ "/home/kantanat/MagOp-project/src/backend_controller.cpp", "MU", null ],
+		[ "/home/kantanat/MagOp-project/src/camera_handler.cpp", "MU", null ],
+		[ "/home/kantanat/MagOp-project/ui/mainwindow.cpp", "MU", null ]
 	],
 	"UIC_OPTIONS" : [],
 	"UIC_SEARCH_PATHS" : [],

@@ -490,24 +490,8 @@ CMakeFiles/MagOp_app.dir/MagOp_app_autogen/mocs_compilation.cpp.o: \
  /usr/include/aarch64-linux-gnu/qt6/QtCore/QString \
  /usr/include/aarch64-linux-gnu/qt6/QtCore/qstring.h \
  /usr/include/aarch64-linux-gnu/qt6/QtCore/qtmochelpers.h \
- /home/kantanat/MagOp-project/build/MagOp_app_autogen/6YEA5652QU/moc_camera_handler.cpp \
- /home/kantanat/MagOp-project/build/MagOp_app_autogen/6YEA5652QU/../../../include/camera_handler.h \
- /usr/include/aarch64-linux-gnu/qt6/QtCore/QTimer \
- /usr/include/aarch64-linux-gnu/qt6/QtCore/qtimer.h \
- /usr/include/aarch64-linux-gnu/qt6/QtCore/qbasictimer.h \
- /usr/include/aarch64-linux-gnu/qt6/QtCore/qobject.h \
- /usr/include/aarch64-linux-gnu/qt6/QtCore/QDebug \
- /usr/include/aarch64-linux-gnu/qt6/QtCore/qdebug.h \
- /usr/include/aarch64-linux-gnu/qt6/QtCore/qtextstream.h \
- /usr/include/aarch64-linux-gnu/qt6/QtCore/qcontiguouscache.h \
- /usr/include/aarch64-linux-gnu/qt6/QtCore/qsharedpointer.h \
- /usr/include/aarch64-linux-gnu/qt6/QtCore/qshareddata.h \
- /usr/include/aarch64-linux-gnu/qt6/QtCore/qsharedpointer_impl.h \
- /usr/include/aarch64-linux-gnu/qt6/QtCore/qmap.h \
- /usr/include/aarch64-linux-gnu/qt6/QtCore/qshareddata_impl.h \
- /usr/include/aarch64-linux-gnu/qt6/QtCore/qset.h \
- /usr/include/aarch64-linux-gnu/qt6/QtCore/qhash.h \
- /usr/include/aarch64-linux-gnu/qt6/QtCore/qvarlengtharray.h \
+ /home/kantanat/MagOp-project/build/MagOp_app_autogen/6YEA5652QU/moc_backend_controller.cpp \
+ /home/kantanat/MagOp-project/build/MagOp_app_autogen/6YEA5652QU/../../../include/backend_controller.h \
  /usr/include/aarch64-linux-gnu/qt6/QtGui/QImage \
  /usr/include/aarch64-linux-gnu/qt6/QtGui/qimage.h \
  /usr/include/aarch64-linux-gnu/qt6/QtGui/qtguiglobal.h \
@@ -531,6 +515,12 @@ CMakeFiles/MagOp_app.dir/MagOp_app_autogen/mocs_compilation.cpp.o: \
  /usr/include/c++/14/cassert \
  /usr/include/aarch64-linux-gnu/qt6/QtCore/q20iterator.h \
  /usr/include/aarch64-linux-gnu/qt6/QtCore/qline.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/QThread \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/qthread.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/qobject.h \
+ /usr/include/c++/14/future /usr/include/c++/14/condition_variable \
+ /usr/include/c++/14/bits/atomic_futex.h \
+ /usr/include/c++/14/bits/std_thread.h \
  /usr/include/aarch64-linux-gnu/qt6/QtCore/QDir \
  /usr/include/aarch64-linux-gnu/qt6/QtCore/qdir.h \
  /usr/include/aarch64-linux-gnu/qt6/QtCore/qdirlisting.h \
@@ -541,11 +531,76 @@ CMakeFiles/MagOp_app.dir/MagOp_app_autogen/mocs_compilation.cpp.o: \
  /usr/include/aarch64-linux-gnu/qt6/QtCore/qlocale.h \
  /usr/include/aarch64-linux-gnu/qt6/QtCore/qvariant.h \
  /usr/include/aarch64-linux-gnu/qt6/QtCore/qdebug.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/qtextstream.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/qcontiguouscache.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/qsharedpointer.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/qshareddata.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/qsharedpointer_impl.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/qmap.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/qshareddata_impl.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/qset.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/qhash.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/qvarlengtharray.h \
  /usr/include/aarch64-linux-gnu/qt6/QtCore/qfile.h \
  /usr/include/c++/14/filesystem /usr/include/c++/14/bits/fs_fwd.h \
  /usr/include/c++/14/bits/fs_path.h /usr/include/c++/14/codecvt \
  /usr/include/c++/14/bits/fs_dir.h /usr/include/c++/14/bits/fs_ops.h \
  /usr/include/aarch64-linux-gnu/qt6/QtCore/qfileinfo.h \
  /usr/include/aarch64-linux-gnu/qt6/QtCore/qtimezone.h \
+ /home/kantanat/MagOp-project/build/MagOp_app_autogen/6YEA5652QU/../../../include/camera_handler.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/QTimer \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/qtimer.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/qbasictimer.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/QDebug \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/qdebug.h \
  /usr/include/aarch64-linux-gnu/qt6/QtCore/QDateTime \
- /usr/include/aarch64-linux-gnu/qt6/QtCore/qdatetime.h
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/qdatetime.h \
+ /home/kantanat/MagOp-project/build/MagOp_app_autogen/6YEA5652QU/../../../include/ai_processing.h \
+ /home/kantanat/MagOp-project/build/MagOp_app_autogen/6YEA5652QU/moc_camera_handler.cpp \
+ /home/kantanat/MagOp-project/build/MagOp_app_autogen/6YEA5652QU/../../../include/camera_handler.h \
+ /home/kantanat/MagOp-project/build/MagOp_app_autogen/UYX5XTB5RZ/moc_mainwindow.cpp \
+ /home/kantanat/MagOp-project/build/MagOp_app_autogen/UYX5XTB5RZ/../../../ui/mainwindow.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtWidgets/QMainWindow \
+ /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qmainwindow.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qtwidgetsglobal.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qtwidgets-config.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qtwidgetsexports.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qwidget.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtGui/qaction.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtGui/qkeysequence.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtGui/qicon.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtGui/qpixmap.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtGui/qimage.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtGui/qpalette.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtGui/qbrush.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtGui/qfont.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/qendian.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtGui/qfontmetrics.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtGui/qfontinfo.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qsizepolicy.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtGui/qcursor.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtGui/qbitmap.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qtabwidget.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtWidgets/QLabel \
+ /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qlabel.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qframe.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtGui/qpicture.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtGui/qtextdocument.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/qurl.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtWidgets/QPushButton \
+ /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qpushbutton.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qabstractbutton.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtWidgets/QStackedWidget \
+ /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qstackedwidget.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtWidgets/QLineEdit \
+ /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qlineedit.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtGui/qtextcursor.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtGui/qtextformat.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtGui/qpen.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtGui/qtextoption.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtWidgets/QVBoxLayout \
+ /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qboxlayout.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qlayout.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qlayoutitem.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qboxlayout.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qgridlayout.h

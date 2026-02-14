@@ -4,10 +4,14 @@ MagOp_app_autogen/timestamp: \
 	/home/kantanat/MagOp-project/build/CMakeFiles/3.31.6/CMakeSystem.cmake \
 	/home/kantanat/MagOp-project/build/MagOp_app_autogen/moc_predefs.h \
 	/home/kantanat/MagOp-project/include/ai_processing.h \
+	/home/kantanat/MagOp-project/include/backend_controller.h \
 	/home/kantanat/MagOp-project/include/camera_handler.h \
 	/home/kantanat/MagOp-project/main.cpp \
 	/home/kantanat/MagOp-project/src/ai_processing.cpp \
+	/home/kantanat/MagOp-project/src/backend_controller.cpp \
 	/home/kantanat/MagOp-project/src/camera_handler.cpp \
+	/home/kantanat/MagOp-project/ui/mainwindow.cpp \
+	/home/kantanat/MagOp-project/ui/mainwindow.h \
 	/usr/include/aarch64-linux-gnu/bits/atomic_wide_counter.h \
 	/usr/include/aarch64-linux-gnu/bits/byteswap.h \
 	/usr/include/aarch64-linux-gnu/bits/cpu-set.h \
@@ -105,6 +109,7 @@ MagOp_app_autogen/timestamp: \
 	/usr/include/aarch64-linux-gnu/qt6/QtCore/QMutex \
 	/usr/include/aarch64-linux-gnu/qt6/QtCore/QObject \
 	/usr/include/aarch64-linux-gnu/qt6/QtCore/QString \
+	/usr/include/aarch64-linux-gnu/qt6/QtCore/QThread \
 	/usr/include/aarch64-linux-gnu/qt6/QtCore/QTimer \
 	/usr/include/aarch64-linux-gnu/qt6/QtCore/q20functional.h \
 	/usr/include/aarch64-linux-gnu/qt6/QtCore/q20iterator.h \
@@ -146,6 +151,7 @@ MagOp_app_autogen/timestamp: \
 	/usr/include/aarch64-linux-gnu/qt6/QtCore/qdir.h \
 	/usr/include/aarch64-linux-gnu/qt6/QtCore/qdirlisting.h \
 	/usr/include/aarch64-linux-gnu/qt6/QtCore/qelapsedtimer.h \
+	/usr/include/aarch64-linux-gnu/qt6/QtCore/qendian.h \
 	/usr/include/aarch64-linux-gnu/qt6/QtCore/qexceptionhandling.h \
 	/usr/include/aarch64-linux-gnu/qt6/QtCore/qfile.h \
 	/usr/include/aarch64-linux-gnu/qt6/QtCore/qfiledevice.h \
@@ -222,6 +228,7 @@ MagOp_app_autogen/timestamp: \
 	/usr/include/aarch64-linux-gnu/qt6/QtCore/qtdeprecationmarkers.h \
 	/usr/include/aarch64-linux-gnu/qt6/QtCore/qtenvironmentvariables.h \
 	/usr/include/aarch64-linux-gnu/qt6/QtCore/qtextstream.h \
+	/usr/include/aarch64-linux-gnu/qt6/QtCore/qthread.h \
 	/usr/include/aarch64-linux-gnu/qt6/QtCore/qtimer.h \
 	/usr/include/aarch64-linux-gnu/qt6/QtCore/qtimezone.h \
 	/usr/include/aarch64-linux-gnu/qt6/QtCore/qtmetamacros.h \
@@ -235,6 +242,7 @@ MagOp_app_autogen/timestamp: \
 	/usr/include/aarch64-linux-gnu/qt6/QtCore/qtversionchecks.h \
 	/usr/include/aarch64-linux-gnu/qt6/QtCore/qtypeinfo.h \
 	/usr/include/aarch64-linux-gnu/qt6/QtCore/qtypes.h \
+	/usr/include/aarch64-linux-gnu/qt6/QtCore/qurl.h \
 	/usr/include/aarch64-linux-gnu/qt6/QtCore/qutf8stringview.h \
 	/usr/include/aarch64-linux-gnu/qt6/QtCore/qvariant.h \
 	/usr/include/aarch64-linux-gnu/qt6/QtCore/qvarlengtharray.h \
@@ -242,19 +250,59 @@ MagOp_app_autogen/timestamp: \
 	/usr/include/aarch64-linux-gnu/qt6/QtCore/qxptype_traits.h \
 	/usr/include/aarch64-linux-gnu/qt6/QtCore/qyieldcpu.h \
 	/usr/include/aarch64-linux-gnu/qt6/QtGui/QImage \
+	/usr/include/aarch64-linux-gnu/qt6/QtGui/qaction.h \
+	/usr/include/aarch64-linux-gnu/qt6/QtGui/qbitmap.h \
+	/usr/include/aarch64-linux-gnu/qt6/QtGui/qbrush.h \
 	/usr/include/aarch64-linux-gnu/qt6/QtGui/qcolor.h \
+	/usr/include/aarch64-linux-gnu/qt6/QtGui/qcursor.h \
+	/usr/include/aarch64-linux-gnu/qt6/QtGui/qfont.h \
+	/usr/include/aarch64-linux-gnu/qt6/QtGui/qfontinfo.h \
+	/usr/include/aarch64-linux-gnu/qt6/QtGui/qfontmetrics.h \
+	/usr/include/aarch64-linux-gnu/qt6/QtGui/qicon.h \
 	/usr/include/aarch64-linux-gnu/qt6/QtGui/qimage.h \
+	/usr/include/aarch64-linux-gnu/qt6/QtGui/qkeysequence.h \
 	/usr/include/aarch64-linux-gnu/qt6/QtGui/qpaintdevice.h \
+	/usr/include/aarch64-linux-gnu/qt6/QtGui/qpalette.h \
+	/usr/include/aarch64-linux-gnu/qt6/QtGui/qpen.h \
+	/usr/include/aarch64-linux-gnu/qt6/QtGui/qpicture.h \
 	/usr/include/aarch64-linux-gnu/qt6/QtGui/qpixelformat.h \
+	/usr/include/aarch64-linux-gnu/qt6/QtGui/qpixmap.h \
 	/usr/include/aarch64-linux-gnu/qt6/QtGui/qpolygon.h \
 	/usr/include/aarch64-linux-gnu/qt6/QtGui/qregion.h \
 	/usr/include/aarch64-linux-gnu/qt6/QtGui/qrgb.h \
 	/usr/include/aarch64-linux-gnu/qt6/QtGui/qrgba64.h \
+	/usr/include/aarch64-linux-gnu/qt6/QtGui/qtextcursor.h \
+	/usr/include/aarch64-linux-gnu/qt6/QtGui/qtextdocument.h \
+	/usr/include/aarch64-linux-gnu/qt6/QtGui/qtextformat.h \
+	/usr/include/aarch64-linux-gnu/qt6/QtGui/qtextoption.h \
 	/usr/include/aarch64-linux-gnu/qt6/QtGui/qtgui-config.h \
 	/usr/include/aarch64-linux-gnu/qt6/QtGui/qtguiexports.h \
 	/usr/include/aarch64-linux-gnu/qt6/QtGui/qtguiglobal.h \
 	/usr/include/aarch64-linux-gnu/qt6/QtGui/qtransform.h \
 	/usr/include/aarch64-linux-gnu/qt6/QtGui/qwindowdefs.h \
+	/usr/include/aarch64-linux-gnu/qt6/QtWidgets/QLabel \
+	/usr/include/aarch64-linux-gnu/qt6/QtWidgets/QLineEdit \
+	/usr/include/aarch64-linux-gnu/qt6/QtWidgets/QMainWindow \
+	/usr/include/aarch64-linux-gnu/qt6/QtWidgets/QPushButton \
+	/usr/include/aarch64-linux-gnu/qt6/QtWidgets/QStackedWidget \
+	/usr/include/aarch64-linux-gnu/qt6/QtWidgets/QVBoxLayout \
+	/usr/include/aarch64-linux-gnu/qt6/QtWidgets/qabstractbutton.h \
+	/usr/include/aarch64-linux-gnu/qt6/QtWidgets/qboxlayout.h \
+	/usr/include/aarch64-linux-gnu/qt6/QtWidgets/qframe.h \
+	/usr/include/aarch64-linux-gnu/qt6/QtWidgets/qgridlayout.h \
+	/usr/include/aarch64-linux-gnu/qt6/QtWidgets/qlabel.h \
+	/usr/include/aarch64-linux-gnu/qt6/QtWidgets/qlayout.h \
+	/usr/include/aarch64-linux-gnu/qt6/QtWidgets/qlayoutitem.h \
+	/usr/include/aarch64-linux-gnu/qt6/QtWidgets/qlineedit.h \
+	/usr/include/aarch64-linux-gnu/qt6/QtWidgets/qmainwindow.h \
+	/usr/include/aarch64-linux-gnu/qt6/QtWidgets/qpushbutton.h \
+	/usr/include/aarch64-linux-gnu/qt6/QtWidgets/qsizepolicy.h \
+	/usr/include/aarch64-linux-gnu/qt6/QtWidgets/qstackedwidget.h \
+	/usr/include/aarch64-linux-gnu/qt6/QtWidgets/qtabwidget.h \
+	/usr/include/aarch64-linux-gnu/qt6/QtWidgets/qtwidgets-config.h \
+	/usr/include/aarch64-linux-gnu/qt6/QtWidgets/qtwidgetsexports.h \
+	/usr/include/aarch64-linux-gnu/qt6/QtWidgets/qtwidgetsglobal.h \
+	/usr/include/aarch64-linux-gnu/qt6/QtWidgets/qwidget.h \
 	/usr/include/aarch64-linux-gnu/sys/cdefs.h \
 	/usr/include/aarch64-linux-gnu/sys/select.h \
 	/usr/include/aarch64-linux-gnu/sys/types.h \
@@ -278,6 +326,7 @@ MagOp_app_autogen/timestamp: \
 	/usr/include/c++/14/bits/allocated_ptr.h \
 	/usr/include/c++/14/bits/allocator.h \
 	/usr/include/c++/14/bits/atomic_base.h \
+	/usr/include/c++/14/bits/atomic_futex.h \
 	/usr/include/c++/14/bits/atomic_lockfree_defines.h \
 	/usr/include/c++/14/bits/basic_ios.h \
 	/usr/include/c++/14/bits/basic_ios.tcc \
@@ -338,6 +387,7 @@ MagOp_app_autogen/timestamp: \
 	/usr/include/c++/14/bits/std_abs.h \
 	/usr/include/c++/14/bits/std_function.h \
 	/usr/include/c++/14/bits/std_mutex.h \
+	/usr/include/c++/14/bits/std_thread.h \
 	/usr/include/c++/14/bits/stl_algo.h \
 	/usr/include/c++/14/bits/stl_algobase.h \
 	/usr/include/c++/14/bits/stl_bvector.h \
@@ -387,6 +437,7 @@ MagOp_app_autogen/timestamp: \
 	/usr/include/c++/14/compare \
 	/usr/include/c++/14/complex \
 	/usr/include/c++/14/concepts \
+	/usr/include/c++/14/condition_variable \
 	/usr/include/c++/14/cstddef \
 	/usr/include/c++/14/cstdint \
 	/usr/include/c++/14/cstdio \
@@ -408,6 +459,7 @@ MagOp_app_autogen/timestamp: \
 	/usr/include/c++/14/ext/type_traits.h \
 	/usr/include/c++/14/filesystem \
 	/usr/include/c++/14/functional \
+	/usr/include/c++/14/future \
 	/usr/include/c++/14/initializer_list \
 	/usr/include/c++/14/iomanip \
 	/usr/include/c++/14/ios \

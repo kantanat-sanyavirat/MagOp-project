@@ -227,6 +227,30 @@ src/ai_processing.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/MagOp_app.dir/build.make CMakeFiles/MagOp_app.dir/src/ai_processing.cpp.s
 .PHONY : src/ai_processing.cpp.s
 
+src/backend_controller.o: src/backend_controller.cpp.o
+.PHONY : src/backend_controller.o
+
+# target to build an object file
+src/backend_controller.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/MagOp_app.dir/build.make CMakeFiles/MagOp_app.dir/src/backend_controller.cpp.o
+.PHONY : src/backend_controller.cpp.o
+
+src/backend_controller.i: src/backend_controller.cpp.i
+.PHONY : src/backend_controller.i
+
+# target to preprocess a source file
+src/backend_controller.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/MagOp_app.dir/build.make CMakeFiles/MagOp_app.dir/src/backend_controller.cpp.i
+.PHONY : src/backend_controller.cpp.i
+
+src/backend_controller.s: src/backend_controller.cpp.s
+.PHONY : src/backend_controller.s
+
+# target to generate assembly for a file
+src/backend_controller.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/MagOp_app.dir/build.make CMakeFiles/MagOp_app.dir/src/backend_controller.cpp.s
+.PHONY : src/backend_controller.cpp.s
+
 src/camera_handler.o: src/camera_handler.cpp.o
 .PHONY : src/camera_handler.o
 
@@ -251,6 +275,30 @@ src/camera_handler.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/MagOp_app.dir/build.make CMakeFiles/MagOp_app.dir/src/camera_handler.cpp.s
 .PHONY : src/camera_handler.cpp.s
 
+ui/mainwindow.o: ui/mainwindow.cpp.o
+.PHONY : ui/mainwindow.o
+
+# target to build an object file
+ui/mainwindow.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/MagOp_app.dir/build.make CMakeFiles/MagOp_app.dir/ui/mainwindow.cpp.o
+.PHONY : ui/mainwindow.cpp.o
+
+ui/mainwindow.i: ui/mainwindow.cpp.i
+.PHONY : ui/mainwindow.i
+
+# target to preprocess a source file
+ui/mainwindow.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/MagOp_app.dir/build.make CMakeFiles/MagOp_app.dir/ui/mainwindow.cpp.i
+.PHONY : ui/mainwindow.cpp.i
+
+ui/mainwindow.s: ui/mainwindow.cpp.s
+.PHONY : ui/mainwindow.s
+
+# target to generate assembly for a file
+ui/mainwindow.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/MagOp_app.dir/build.make CMakeFiles/MagOp_app.dir/ui/mainwindow.cpp.s
+.PHONY : ui/mainwindow.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -271,9 +319,15 @@ help:
 	@echo "... src/ai_processing.o"
 	@echo "... src/ai_processing.i"
 	@echo "... src/ai_processing.s"
+	@echo "... src/backend_controller.o"
+	@echo "... src/backend_controller.i"
+	@echo "... src/backend_controller.s"
 	@echo "... src/camera_handler.o"
 	@echo "... src/camera_handler.i"
 	@echo "... src/camera_handler.s"
+	@echo "... ui/mainwindow.o"
+	@echo "... ui/mainwindow.i"
+	@echo "... ui/mainwindow.s"
 .PHONY : help
 
 

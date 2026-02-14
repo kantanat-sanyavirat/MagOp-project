@@ -11,8 +11,12 @@ file(REMOVE_RECURSE
   "CMakeFiles/MagOp_app.dir/main.cpp.o.d"
   "CMakeFiles/MagOp_app.dir/src/ai_processing.cpp.o"
   "CMakeFiles/MagOp_app.dir/src/ai_processing.cpp.o.d"
+  "CMakeFiles/MagOp_app.dir/src/backend_controller.cpp.o"
+  "CMakeFiles/MagOp_app.dir/src/backend_controller.cpp.o.d"
   "CMakeFiles/MagOp_app.dir/src/camera_handler.cpp.o"
   "CMakeFiles/MagOp_app.dir/src/camera_handler.cpp.o.d"
+  "CMakeFiles/MagOp_app.dir/ui/mainwindow.cpp.o"
+  "CMakeFiles/MagOp_app.dir/ui/mainwindow.cpp.o.d"
   "MagOp_app_autogen/mocs_compilation.cpp"
   "MagOp_app_autogen/timestamp"
 )
