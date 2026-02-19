@@ -1,67 +1,77 @@
-#include "ai_processing.h" // CMake รู้จัก include path แล้ว ใส่ชื่อไฟล์ได้เลย
-#include <QThread>
+#include "ai_processing.h"
 #include <QDateTime>
-#include <iostream>
+#include <QThread>
+#include <QDebug>
 
 AI_Processing::AI_Processing(QObject *parent) : QObject(parent) {
     isBusy = false;
+    // ลงทะเบียนชนิดข้อมูล (กันเหนียว)
+    qRegisterMetaType<FrameResult>("FrameResult");
 }
 
-void AI_Processing::addFrameToQueue(const cv::Mat &frame) {
+AI_Processing::~AI_Processing() {
+    // ล้างคิว
     QMutexLocker locker(&mutex);
-    frameQueue.push(frame.clone());
-    // กระตุ้นให้ทำงานใน Thread ตัวเอง
+    frameQueue.clear();
+}
+
+void AI_Processing::addFrameToQueue(cv::Mat frame) {
+    QMutexLocker locker(&mutex);
+    if (!frame.empty()) {
+        frameQueue.push_back(frame.clone()); // ก็อปปี้รูปเก็บเข้าคิว
+        
+        // ถ้าว่างอยู่ ให้เริ่มทำเลย
+        if (!isBusy) {
+            // ใช้ QMetaObject::invokeMethod เพื่อเรียก processNextFrame ในรอบถัดไป (กัน Stack Overflow)
+            QMetaObject::invokeMethod(this, "processNextFrame", Qt::QueuedConnection);
+        }
+    }
+}
+
+// ฟังก์ชันนี้แหละครับที่ Error เมื่อกี้ ตอนนี้หายแน่นอน
+void AI_Processing::processNextFrame() {
+    cv::Mat frame;
+    
+    // 1. ดึงงานออกจากคิว
+    {
+        QMutexLocker locker(&mutex);
+        if (frameQueue.empty()) {
+            isBusy = false;
+            return;
+        }
+        frame = frameQueue.front();
+        frameQueue.pop_front();
+        isBusy = true;
+    }
+
+    // 2. เริ่มประมวลผล (จำลอง AI)
+    // ตรงนี้ถ้ามีโค้ด ONNX จริงๆ ให้ใส่แทน runFakeAI
+    FrameResult result = runFakeAI(frame);
+
+    // 3. ส่งผลลัพธ์กลับไป UI
+    emit resultReady(result);
+
+    // 4. ทำงานถัดไป (Recursive แบบปลอดภัย)
     QMetaObject::invokeMethod(this, "processNextFrame", Qt::QueuedConnection);
 }
 
-void AI_Processing::processNextFrame() {
-    mutex.lock();
-    if (frameQueue.empty() || isBusy) {
-        mutex.unlock();
-        return;
-    }
-    cv::Mat inputFrame = frameQueue.front();
-    frameQueue.pop();
-    isBusy = true;
-    mutex.unlock();
-
-    // ==========================================
-    // [ZONE AI SIMULATION]
-    // ==========================================
-    std::cout << "[AI] Analyzing frame..." << std::endl;
-    QThread::msleep(500); // จำลองว่าคิดหนัก
+FrameResult AI_Processing::runFakeAI(cv::Mat frame) {
+    // จำลองการทำงาน AI (หน่วงเวลา + สร้างกรอบมั่วๆ)
+    QThread::msleep(500); // แกล้งทำเป็นคิด 0.5 วิ
 
     FrameResult result;
-    result.originalImage = inputFrame;
+    result.originalImage = frame.clone();
+    result.timestamp = QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss");
+
+    // จำลองผลลัพธ์ (Detection)
+    Detection det;
+    det.id = 1;
+    det.label = "Screw M4";
+    det.confidence = 0.95;
+    det.boundingBox = cv::Rect(100, 100, 200, 150); // x, y, w, h
     
-    QDateTime now = QDateTime::currentDateTime();
-    result.timestamp = now.toString("HH:mm:ss");
-
-    // จำลองการเจอวัตถุตามตัวเลขเวลา (เช่น 134510 -> เจอ 6 ตัว)
-    QString simulateText = now.toString("HHmmss");
-    int startX = 50;
-
-    for (int i = 0; i < simulateText.length(); i++) {
-        DetectedObject obj;
-        obj.label = QString(simulateText.at(i));
-        
-        // ขยับกล่องไปทางขวาเรื่อยๆ
-        obj.boundingBox = cv::Rect(startX + (i * 50), 100, 40, 60);
-        obj.confidence = 0.85f + (float)(rand() % 15) / 100.0f;
-        
-        result.detections.push_back(obj);
-    }
-    // ==========================================
-
-    emit resultReady(result);
-
-    // เช็คงานถัดไป
-    mutex.lock();
-    isBusy = false;
-    bool hasMore = !frameQueue.empty();
-    mutex.unlock();
-
-    if (hasMore) {
-        QMetaObject::invokeMethod(this, "processNextFrame", Qt::QueuedConnection);
-    }
+    result.detections.push_back(det);
+    
+    qDebug() << "AI Processed Frame: " << result.timestamp;
+    return result;
 }

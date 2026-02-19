@@ -1,45 +1,68 @@
-#ifndef AIPROCESSING_H
-#define AIPROCESSING_H
+#ifndef AI_PROCESSING_H
+#define AI_PROCESSING_H
 
 #include <QObject>
+#include <QMetaType>  // [สำคัญ] ต้องมี
+#include <QImage>
 #include <QMutex>
-#include <queue>
-#include <vector>
 #include <opencv2/opencv.hpp>
-#include <QString>
+#include <vector>
+#include <deque>
 
-// struct ลูก
-struct DetectedObject {
-    cv::Rect boundingBox;
+// ---------------------------------------------------------
+// 1. ประกาศ Struct ก่อน (ต้องอยู่บนสุด!)
+// ---------------------------------------------------------
+
+struct Detection {
+    int id;
     QString label;
     float confidence;
+    cv::Rect boundingBox;
 };
 
-// struct แม่ (ที่เราจะส่ง)
 struct FrameResult {
     cv::Mat originalImage;
-    std::vector<DetectedObject> detections; // เก็บหลายตัว
+    std::vector<Detection> detections;
     QString timestamp;
-};
-Q_DECLARE_METATYPE(FrameResult) // <--- ต้องประกาศตัวนี้
 
+    // Constructor ที่จำเป็น
+    FrameResult() {}
+    FrameResult(const FrameResult& other) 
+        : originalImage(other.originalImage.clone()),
+          detections(other.detections),
+          timestamp(other.timestamp) {}
+    ~FrameResult() {}
+};
+
+// ---------------------------------------------------------
+// 2. สั่ง Register MetaType (ต้องอยู่หลัง Struct เสมอ!)
+// ---------------------------------------------------------
+Q_DECLARE_METATYPE(FrameResult)
+
+// ---------------------------------------------------------
+// 3. ประกาศ Class AI_Processing (อยู่ล่างสุด)
+// ---------------------------------------------------------
 class AI_Processing : public QObject
 {
     Q_OBJECT
 public:
     explicit AI_Processing(QObject *parent = nullptr);
-    void addFrameToQueue(const cv::Mat &frame);
+    ~AI_Processing();
+
+    void addFrameToQueue(cv::Mat frame);
 
 signals:
-    void resultReady(FrameResult data); // <--- ส่ง FrameResult
+    void resultReady(FrameResult result);
 
 private slots:
     void processNextFrame();
 
 private:
-    std::queue<cv::Mat> frameQueue;
-    QMutex mutex;
+    FrameResult runFakeAI(cv::Mat frame);
+
+    std::deque<cv::Mat> frameQueue;
     bool isBusy;
+    QMutex mutex;
 };
 
-#endif // AIPROCESSING_H
+#endif // AI_PROCESSING_H

@@ -327,14 +327,44 @@ CMakeFiles/MagOp_app.dir/MagOp_app_autogen/mocs_compilation.cpp.o: \
  /usr/include/aarch64-linux-gnu/qt6/QtCore/qbindingstorage.h \
  /usr/include/c++/14/chrono /usr/include/c++/14/bits/chrono.h \
  /usr/include/c++/14/ratio /usr/include/c++/14/ctime \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/QMetaType \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/qmetatype.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtGui/QImage \
+ /usr/include/aarch64-linux-gnu/qt6/QtGui/qimage.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtGui/qtguiglobal.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtGui/qtgui-config.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtGui/qtguiexports.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtGui/qcolor.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtGui/qrgb.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtGui/qrgba64.h \
+ /usr/lib/gcc/aarch64-linux-gnu/14/include/limits.h \
+ /usr/lib/gcc/aarch64-linux-gnu/14/include/syslimits.h \
+ /usr/include/limits.h /usr/include/aarch64-linux-gnu/bits/posix1_lim.h \
+ /usr/include/aarch64-linux-gnu/bits/local_lim.h \
+ /usr/include/linux/limits.h \
+ /usr/include/aarch64-linux-gnu/bits/posix2_lim.h \
+ /usr/include/aarch64-linux-gnu/bits/xopen_lim.h \
+ /usr/include/aarch64-linux-gnu/bits/uio_lim.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtGui/qpaintdevice.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtGui/qwindowdefs.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/qrect.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/qmargins.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/q23utility.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/qsize.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/qpoint.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtGui/qpixelformat.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtGui/qtransform.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtGui/qpolygon.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtGui/qregion.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/qspan.h \
+ /usr/include/c++/14/cassert \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/q20iterator.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/qline.h \
  /usr/include/aarch64-linux-gnu/qt6/QtCore/QMutex \
  /usr/include/aarch64-linux-gnu/qt6/QtCore/qmutex.h \
  /usr/include/aarch64-linux-gnu/qt6/QtCore/qdeadlinetimer.h \
  /usr/include/aarch64-linux-gnu/qt6/QtCore/qelapsedtimer.h \
  /usr/include/aarch64-linux-gnu/qt6/QtCore/qtsan_impl.h \
- /usr/include/c++/14/queue /usr/include/c++/14/deque \
- /usr/include/c++/14/bits/stl_deque.h /usr/include/c++/14/bits/deque.tcc \
- /usr/include/c++/14/bits/stl_queue.h \
  /usr/include/opencv4/opencv2/opencv.hpp \
  /usr/include/opencv4/opencv2/opencv_modules.hpp \
  /usr/include/opencv4/opencv2/core.hpp \
@@ -346,14 +376,6 @@ CMakeFiles/MagOp_app.dir/MagOp_app_autogen/mocs_compilation.cpp.o: \
  /usr/lib/gcc/aarch64-linux-gnu/14/include/arm_fp16.h \
  /usr/lib/gcc/aarch64-linux-gnu/14/include/arm_bf16.h \
  /usr/include/opencv4/opencv2/core/base.hpp /usr/include/c++/14/climits \
- /usr/lib/gcc/aarch64-linux-gnu/14/include/limits.h \
- /usr/lib/gcc/aarch64-linux-gnu/14/include/syslimits.h \
- /usr/include/limits.h /usr/include/aarch64-linux-gnu/bits/posix1_lim.h \
- /usr/include/aarch64-linux-gnu/bits/local_lim.h \
- /usr/include/linux/limits.h \
- /usr/include/aarch64-linux-gnu/bits/posix2_lim.h \
- /usr/include/aarch64-linux-gnu/bits/xopen_lim.h \
- /usr/include/aarch64-linux-gnu/bits/uio_lim.h \
  /usr/include/opencv4/opencv2/core/cvstd.hpp \
  /usr/include/opencv4/opencv2/core/cvstd_wrapper.hpp \
  /usr/include/opencv4/opencv2/core/neon_utils.hpp \
@@ -479,6 +501,9 @@ CMakeFiles/MagOp_app.dir/MagOp_app_autogen/mocs_compilation.cpp.o: \
  /usr/include/opencv4/opencv2/stitching/detail/matchers.hpp \
  /usr/include/opencv4/opencv2/stitching/detail/util.hpp \
  /usr/include/opencv4/opencv2/stitching/detail/util_inl.hpp \
+ /usr/include/c++/14/queue /usr/include/c++/14/deque \
+ /usr/include/c++/14/bits/stl_deque.h /usr/include/c++/14/bits/deque.tcc \
+ /usr/include/c++/14/bits/stl_queue.h \
  /usr/include/opencv4/opencv2/stitching/detail/camera.hpp \
  /usr/include/opencv4/opencv2/stitching/detail/exposure_compensate.hpp \
  /usr/include/opencv4/opencv2/stitching/detail/seam_finders.hpp \
@@ -487,34 +512,9 @@ CMakeFiles/MagOp_app.dir/MagOp_app_autogen/mocs_compilation.cpp.o: \
  /usr/include/opencv4/opencv2/video.hpp \
  /usr/include/opencv4/opencv2/video/tracking.hpp \
  /usr/include/opencv4/opencv2/video/background_segm.hpp \
- /usr/include/aarch64-linux-gnu/qt6/QtCore/QString \
- /usr/include/aarch64-linux-gnu/qt6/QtCore/qstring.h \
  /usr/include/aarch64-linux-gnu/qt6/QtCore/qtmochelpers.h \
  /home/kantanat/MagOp-project/build/MagOp_app_autogen/6YEA5652QU/moc_backend_controller.cpp \
  /home/kantanat/MagOp-project/build/MagOp_app_autogen/6YEA5652QU/../../../include/backend_controller.h \
- /usr/include/aarch64-linux-gnu/qt6/QtGui/QImage \
- /usr/include/aarch64-linux-gnu/qt6/QtGui/qimage.h \
- /usr/include/aarch64-linux-gnu/qt6/QtGui/qtguiglobal.h \
- /usr/include/aarch64-linux-gnu/qt6/QtGui/qtgui-config.h \
- /usr/include/aarch64-linux-gnu/qt6/QtGui/qtguiexports.h \
- /usr/include/aarch64-linux-gnu/qt6/QtGui/qcolor.h \
- /usr/include/aarch64-linux-gnu/qt6/QtGui/qrgb.h \
- /usr/include/aarch64-linux-gnu/qt6/QtGui/qrgba64.h \
- /usr/include/aarch64-linux-gnu/qt6/QtGui/qpaintdevice.h \
- /usr/include/aarch64-linux-gnu/qt6/QtGui/qwindowdefs.h \
- /usr/include/aarch64-linux-gnu/qt6/QtCore/qrect.h \
- /usr/include/aarch64-linux-gnu/qt6/QtCore/qmargins.h \
- /usr/include/aarch64-linux-gnu/qt6/QtCore/q23utility.h \
- /usr/include/aarch64-linux-gnu/qt6/QtCore/qsize.h \
- /usr/include/aarch64-linux-gnu/qt6/QtCore/qpoint.h \
- /usr/include/aarch64-linux-gnu/qt6/QtGui/qpixelformat.h \
- /usr/include/aarch64-linux-gnu/qt6/QtGui/qtransform.h \
- /usr/include/aarch64-linux-gnu/qt6/QtGui/qpolygon.h \
- /usr/include/aarch64-linux-gnu/qt6/QtGui/qregion.h \
- /usr/include/aarch64-linux-gnu/qt6/QtCore/qspan.h \
- /usr/include/c++/14/cassert \
- /usr/include/aarch64-linux-gnu/qt6/QtCore/q20iterator.h \
- /usr/include/aarch64-linux-gnu/qt6/QtCore/qline.h \
  /usr/include/aarch64-linux-gnu/qt6/QtCore/QThread \
  /usr/include/aarch64-linux-gnu/qt6/QtCore/qthread.h \
  /usr/include/aarch64-linux-gnu/qt6/QtCore/qobject.h \

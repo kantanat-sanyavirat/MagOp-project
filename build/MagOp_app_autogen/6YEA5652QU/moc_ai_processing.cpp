@@ -41,7 +41,7 @@ static constexpr auto qt_meta_stringdata_ZN13AI_ProcessingE = QtMocHelpers::stri
     "resultReady",
     "",
     "FrameResult",
-    "data",
+    "result",
     "processNextFrame"
 );
 #else  // !QT_MOC_HAS_STRINGDATA
