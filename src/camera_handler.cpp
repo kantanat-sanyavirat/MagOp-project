@@ -7,6 +7,7 @@
 CameraHandler::CameraHandler(QObject *parent) : QObject(parent) {
     timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, &CameraHandler::loop);
+    m_camIndex = 0; // ค่าเริ่มต้น
 }
 
 CameraHandler::~CameraHandler() {
@@ -14,17 +15,26 @@ CameraHandler::~CameraHandler() {
 }
 
 void CameraHandler::startCamera(int camIndex) {
+    m_camIndex = camIndex; // เก็บ index ไว้สำหรับพยายามต่อใหม่ (reconnect)
+    
+    // พยายามเปิดกล้องครั้งแรก
     if (!cap.isOpened()) {
-        // ใช้ V4L2 เพื่อความเสถียรบน Linux/RPi
-        cap.open(camIndex, cv::CAP_V4L2);
-        if(!cap.isOpened()) cap.open(camIndex); // Fallback
-        
+        qDebug() << "Camera: Initial attempt to open index" << camIndex;
+        cap.open(m_camIndex, cv::CAP_V4L2);
+        if(!cap.isOpened()) cap.open(m_camIndex); 
+    }
+
+    if (cap.isOpened()) {
+        qDebug() << "Camera: Initial connection successful.";
         cap.set(cv::CAP_PROP_FRAME_WIDTH, 640);
         cap.set(cv::CAP_PROP_FRAME_HEIGHT, 480);
+    } else {
+        qDebug() << "Camera: Not found. Reconnection loop started...";
     }
-    if (cap.isOpened()) {
-        qDebug() << "Camera started successfully.";
-        timer->start(30); // 30ms ~ 33 FPS
+
+    // เริ่ม Timer เสมอ (แม้จะยังไม่มีกล้อง) เพื่อให้ loop() ทำงานตรวจเช็กต่อไป
+    if (!timer->isActive()) {
+        timer->start(33); // ~30 FPS
     }
 }
 
@@ -34,16 +44,42 @@ void CameraHandler::stopCamera() {
 }
 
 void CameraHandler::loop() {
-    if (!cap.isOpened()) return;
+    // --- ส่วนที่ 1: กรณีกล้องไม่ได้เชื่อมต่ออยู่ ---
+    if (!cap.isOpened()) {
+        static int reconnectCounter = 0;
+        reconnectCounter++;
+
+        // พยายามลองเปิดกล้องใหม่ทุกๆ ประมาณ 2 วินาที (60 รอบของ timer)
+        if (reconnectCounter >= 60) { 
+            qDebug() << "Camera: Trying to reconnect...";
+            cap.open(m_camIndex, cv::CAP_V4L2);
+            if(!cap.isOpened()) cap.open(m_camIndex);
+
+            if (cap.isOpened()) {
+                qDebug() << "Camera: Found! Setting up resolution...";
+                cap.set(cv::CAP_PROP_FRAME_WIDTH, 640);
+                cap.set(cv::CAP_PROP_FRAME_HEIGHT, 480);
+            }
+            reconnectCounter = 0;
+        }
+        return; // ออกจาก loop ไปก่อนเพราะยังไม่มีกล้อง
+    }
+
+    // --- ส่วนที่ 2: กรณีกล้องเชื่อมต่ออยู่ปกติ ---
     cap >> currentFrame;
-    if (currentFrame.empty()) return;
+
+    if (currentFrame.empty()) {
+        qDebug() << "Camera: Disconnected or empty frame received.";
+        cap.release(); // สั่งปิดเพื่อให้เงื่อนไข !cap.isOpened() ด้านบนทำงานในรอบถัดไป
+        return;
+    }
+
     emit frameReady(currentFrame.clone());
 }
 
 void CameraHandler::saveCapturedImage(const cv::Mat& frame) {
     if (frame.empty()) return;
     
-    // เซฟลง folder captured_images ที่หน้าโปรเจค
     QString folderName = "../captured_images";
     if (!QDir(folderName).exists()) QDir().mkdir(folderName);
 
@@ -51,6 +87,6 @@ void CameraHandler::saveCapturedImage(const cv::Mat& frame) {
     QString filename = QString("%1/img_%2.jpg").arg(folderName).arg(timestamp);
 
     if (cv::imwrite(filename.toStdString(), frame)) {
-        std::cout << "[CAMERA] Backup raw image saved." << std::endl;
+        std::cout << "[CAMERA] Backup raw image saved: " << filename.toStdString() << std::endl;
     }
 }

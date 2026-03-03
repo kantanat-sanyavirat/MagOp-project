@@ -33,6 +33,7 @@ private:
     cv::VideoCapture cap;
     cv::Mat currentFrame;
     QTimer *timer;
+    int m_camIndex;
 };
 
 #endif // CAMERAHANDLER_H

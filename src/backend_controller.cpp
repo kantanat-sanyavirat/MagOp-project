@@ -41,10 +41,17 @@ void BackendController::start() {
 }
 
 void BackendController::processCameraFrame(cv::Mat frame) {
-    if (!frame.empty()) {
-        currentLiveFrame = frame.clone();
-        emit frameReady(matToQImage(frame));
+    if (frame.empty()) return;
+
+    // ถ้าได้ภาพมาแล้ว ให้ลบข้อความ Error (ถ้ามี)
+    static bool lastStateWasEmpty = false;
+    if (lastStateWasEmpty) {
+        emit statusMessage("Camera Reconnected ✅");
+        lastStateWasEmpty = false;
     }
+
+    currentLiveFrame = frame.clone();
+    emit frameReady(matToQImage(frame));
 }
 
 void BackendController::capture() {
@@ -63,8 +70,13 @@ void BackendController::handleAiResult(FrameResult result) {
     
     if (result.detections.empty()) {
         currentText = "No Object";
+        currentX = 50; // กำหนดค่าเริ่มต้นถ้าไม่เจอวัตถุ
+        currentY = 50;
     } else {
         currentText = result.detections[0].label;
+        // --- เพิ่ม 2 บรรทัดนี้ ---
+        currentX = result.detections[0].boundingBox.x;
+        currentY = result.detections[0].boundingBox.y;
     }
     emit reviewReady(matToQImage(currentEditedImage), currentText);
 }
@@ -88,23 +100,43 @@ void BackendController::save(QString userText) {
 
 // *** เพิ่มฟังก์ชัน discard() ***
 void BackendController::discard() {
-    emit statusMessage("Discarded ❌");
+    emit statusMessage("Discarded");
     qDebug() << "Backend: Process discarded.";
 }
 
-// *** เพิ่มฟังก์ชันจัดการไฟล์ที่ Linker หาไม่เจอ ***
 void BackendController::refreshFileList() {
     QString folderPath = QDir::homePath() + "/MagOp-project/ai_output";
     QDir dir(folderPath);
     QStringList filters; filters << "*.jpg";
     dir.setNameFilters(filters);
-    emit fileListUpdated(dir.entryList());
+    
+    // เรียงลำดับตามเวลา: ไฟล์ใหม่สุดอยู่บน ไฟล์เก่าสุดอยู่ท้าย
+    dir.setSorting(QDir::Time); 
+    QStringList files = dir.entryList();
+
+    // --- ระบบ Auto-Cleanup: จำกัดไว้ที่ 50 รูป ---
+    int maxFiles = 20; 
+    while (files.size() > maxFiles) {
+        // ลบไฟล์ที่เก่าที่สุด (ไฟล์สุดท้ายในรายการที่เรียงตามเวลา)
+        QString oldFile = files.takeLast(); 
+        if (QFile::exists(folderPath + "/" + oldFile)) {
+            QFile::remove(folderPath + "/" + oldFile);
+        }
+        qDebug() << "Auto-cleanup: Deleted oldest image:" << oldFile;
+    }
+
+    emit fileListUpdated(files);
 }
 
 void BackendController::deleteFile(const QString &fileName) {
     QString folderPath = QDir::homePath() + "/MagOp-project/ai_output";
-    QFile::remove(folderPath + "/" + fileName);
-    refreshFileList();
+    
+    // ลบไฟล์ภาพต้นทาง
+    if (QFile::remove(folderPath + "/" + fileName)) {
+        qDebug() << "Backend: Deleted file" << fileName;
+    }
+    
+    refreshFileList(); // อัปเดตรายการหลังลบ
 }
 
 void BackendController::saveToDiskAndUsb() {
@@ -114,8 +146,63 @@ void BackendController::saveToDiskAndUsb() {
 
     QString fileTimestamp = QDateTime::currentDateTime().toString("yyyyMMdd_HHmmss");
     QString imgName = QString("RESULT_%1.jpg").arg(fileTimestamp);
+    QString localImgPath = localFolder + "/" + imgName;
 
-    cv::imwrite((localFolder + "/" + imgName).toStdString(), currentEditedImage);
+    // --- ส่วนการวาด Overlay ---
+    cv::Mat overlayImage = currentEditedImage.clone();
+    cv::Scalar color(0, 255, 0);
+    cv::rectangle(overlayImage, cv::Rect(currentX, currentY, 200, 150), color, 2);
+    cv::putText(overlayImage, currentText.toStdString(), 
+                cv::Point(currentX, currentY - 10), 
+                cv::FONT_HERSHEY_SIMPLEX, 0.8, color, 2);
+
+    // เซฟลงเครื่องก่อน
+    if (!cv::imwrite(localImgPath.toStdString(), overlayImage)) {
+        qDebug() << "Failed to save local image!";
+        return;
+    }
+
+    // --- ส่วนการหา USB ของจริง (ปรับปรุงใหม่) ---
+    QString userName = qEnvironmentVariable("USER"); 
+    if (userName.isEmpty()) userName = qEnvironmentVariable("USERNAME"); // เผื่อเคสอื่นๆ
+
+    QDir mediaDir("/media/" + userName);
+    // ดึงรายชื่อ Directory ทั้งหมดใน /media/user/
+    QStringList drives = mediaDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
+    
+    bool usbSaved = false;
+    QString foundDriveName = "";
+
+    for (const QString &drive : drives) {
+        QString usbMountPath = mediaDir.absoluteFilePath(drive);
+        
+        // เช็กว่า Directory นี้ "เขียนได้จริง" หรือไม่ (เพื่อตัดพวก System Folder ออก)
+        QFileInfo driveInfo(usbMountPath);
+        if (driveInfo.isWritable()) {
+            QString targetPath = usbMountPath + "/" + imgName;
+            
+            // ถ้าคัดลอกสำเร็จให้หยุดลูป
+            if (QFile::copy(localImgPath, targetPath)) {
+                usbSaved = true;
+                foundDriveName = drive;
+                qDebug() << "Success: Copied to USB at" << targetPath;
+                break; 
+            }
+        }
+    }
+
+    if (usbSaved) {
+        emit statusMessage("Saved to Local & USB: " + foundDriveName + " ✅");
+    } else {
+        if (drives.isEmpty()) {
+            emit statusMessage("Local Saved. (No USB found) ⚠️");
+            qDebug() << "USB Error: No drive detected in /media/" << userName;
+        } else {
+            emit statusMessage("Local Saved, but USB Write Denied! ❌");
+            qDebug() << "USB Error: Found drives but none are writable or copy failed.";
+        }
+    }
+
     refreshFileList();
 }
 
