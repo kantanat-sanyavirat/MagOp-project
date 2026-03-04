@@ -46,12 +46,51 @@ void BackendController::processCameraFrame(cv::Mat frame) {
     // ถ้าได้ภาพมาแล้ว ให้ลบข้อความ Error (ถ้ามี)
     static bool lastStateWasEmpty = false;
     if (lastStateWasEmpty) {
-        emit statusMessage("Camera Reconnected ✅");
+        emit statusMessage("Camera Reconnected");
         lastStateWasEmpty = false;
     }
 
     currentLiveFrame = frame.clone();
     emit frameReady(matToQImage(frame));
+}
+
+void BackendController::loadSavedImage(const QString &fileName) {
+    QString filePath = QDir::homePath() + "/MagOp-project/ai_output/" + fileName;
+    
+    cv::Mat loadedMat = cv::imread(filePath.toStdString());
+    
+    if (!loadedMat.empty()) {
+        m_lastSavedFile = fileName; // <--- เพิ่มบรรทัดนี้ เพื่อให้ลบรูปที่โหลดมาจาก History ได้
+        
+        currentEditedImage = loadedMat.clone();
+        originalCvImage = loadedMat.clone();
+        currentText = fileName;
+        
+        emit reviewReady(matToQImage(currentEditedImage), currentText);
+        emit statusMessage("Viewing: " + fileName);
+    } else {
+        emit statusMessage("Load Failed!");
+    }
+}
+
+void BackendController::exportToUsb(const QString &fileName) {
+    QString sourcePath = QDir::homePath() + "/MagOp-project/ai_output/" + fileName;
+    QString userName = qEnvironmentVariable("USER");
+    if (userName.isEmpty()) userName = "kantanat"; 
+
+    QDir mediaDir("/media/" + userName);
+    QStringList drives = mediaDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
+
+    if (!drives.isEmpty()) {
+        QString usbTargetPath = mediaDir.absoluteFilePath(drives.first()) + "/" + fileName;
+        if (QFile::copy(sourcePath, usbTargetPath)) {
+            emit statusMessage("Export to USB Success!");
+        } else {
+            emit statusMessage("USB Error or File Exists!");
+        }
+    } else {
+        emit statusMessage("No USB Found!");
+    }
 }
 
 void BackendController::capture() {
@@ -94,14 +133,26 @@ void BackendController::adjustImage(int brightnessStep, bool denoise) {
 void BackendController::save(QString userText) {
     currentText = userText;
     saveToDiskAndUsb();
-    emit statusMessage("Saved Successfully ✅");
+    emit statusMessage("Saved Successfully");
     qDebug() << "Backend: Data saved.";
 }
 
-// *** เพิ่มฟังก์ชัน discard() ***
 void BackendController::discard() {
-    emit statusMessage("Discarded");
-    qDebug() << "Backend: Process discarded.";
+    if (m_lastSavedFile.isEmpty()) {
+        emit statusMessage("No file to discard.");
+        return;
+    }
+
+    QString filePath = QDir::homePath() + "/MagOp-project/ai_output/" + m_lastSavedFile;
+
+    if (QFile::exists(filePath)) {
+        if (QFile::remove(filePath)) {
+            emit statusMessage("Deleted: " + m_lastSavedFile);
+            m_lastSavedFile = ""; 
+        } else {
+            emit statusMessage("Delete Failed!");
+        }
+    }
 }
 
 void BackendController::refreshFileList() {
@@ -147,6 +198,7 @@ void BackendController::saveToDiskAndUsb() {
     QString fileTimestamp = QDateTime::currentDateTime().toString("yyyyMMdd_HHmmss");
     QString imgName = QString("RESULT_%1.jpg").arg(fileTimestamp);
     QString localImgPath = localFolder + "/" + imgName;
+    m_lastSavedFile = imgName;
 
     // --- ส่วนการวาด Overlay ---
     cv::Mat overlayImage = currentEditedImage.clone();
@@ -192,13 +244,13 @@ void BackendController::saveToDiskAndUsb() {
     }
 
     if (usbSaved) {
-        emit statusMessage("Saved to Local & USB: " + foundDriveName + " ✅");
+        emit statusMessage("Saved to Local & USB: " + foundDriveName);
     } else {
         if (drives.isEmpty()) {
-            emit statusMessage("Local Saved. (No USB found) ⚠️");
+            emit statusMessage("Local Saved. (No USB found)");
             qDebug() << "USB Error: No drive detected in /media/" << userName;
         } else {
-            emit statusMessage("Local Saved, but USB Write Denied! ❌");
+            emit statusMessage("Local Saved, but USB Write Denied!");
             qDebug() << "USB Error: Found drives but none are writable or copy failed.";
         }
     }

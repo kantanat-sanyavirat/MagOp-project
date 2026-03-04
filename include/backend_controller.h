@@ -25,7 +25,7 @@ public slots:
     // --- รับคำสั่งจากหน้าจอ (Frontend) ---
     void capture();                     // กดปุ่ม Scan
     void save(QString userText);        // กดปุ่ม Save (รับข้อความที่แก้แล้ว)
-    void discard();                     // กดปุ่ม Discard
+    void discard();                     // กดปุ่ม Delete(แก้จากปุ่ม Discard)
     
     // ปรับแต่งภาพ (รับค่า Brightness และปุ่ม Denoise)
     void adjustImage(int brightnessStep, bool denoise); 
@@ -33,6 +33,12 @@ public slots:
     // จัดการไฟล์
     void deleteFile(const QString &fileName);
     void refreshFileList();
+
+    //โหลดรูปภาพจากชื่อไฟล์ใน history
+    void loadSavedImage(const QString &fileName);
+    void exportToUsb(const QString &fileName);
+
+
 
 signals:
     // --- ส่งข้อมูลไปหน้าจอ (Frontend) ---
@@ -51,6 +57,8 @@ private:
     CameraHandler *camera;
     QThread *aiThread;
     AI_Processing *aiProcessor;
+
+    QString m_lastSavedFile; // ตัวแปรเก็บชื่อไฟล์ล่าสุดที่ถูกบันทึก (สำหรับใช้ตอน Delete)
 
     // ตัวแปรเก็บสถานะภาพ
     cv::Mat currentLiveFrame;   // ภาพล่าสุดจากกล้อง (รอถูก capture)

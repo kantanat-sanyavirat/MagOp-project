@@ -45,10 +45,12 @@ static constexpr auto qt_meta_stringdata_ZN10MainWindowE = QtMocHelpers::stringD
     "text",
     "reqDiscard",
     "reqAdjust",
-    "bright",
-    "denoise",
+    "brightness",
+    "contrast",
+    "reqExportToUsb",
+    "fileName",
     "updateLiveView",
-    "img",
+    "image",
     "showReviewMode",
     "showMessage",
     "msg"
@@ -63,34 +65,36 @@ Q_CONSTINIT static const uint qt_meta_data_ZN10MainWindowE[] = {
       12,       // revision
        0,       // classname
        0,    0, // classinfo
-       7,   14, // methods
+       8,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
        0,       // flags
-       4,       // signalCount
+       5,       // signalCount
 
  // signals: name, argc, parameters, tag, flags, initial metatype offsets
-       1,    0,   56,    2, 0x06,    1 /* Public */,
-       3,    1,   57,    2, 0x06,    2 /* Public */,
-       5,    0,   60,    2, 0x06,    4 /* Public */,
-       6,    2,   61,    2, 0x06,    5 /* Public */,
+       1,    0,   62,    2, 0x06,    1 /* Public */,
+       3,    1,   63,    2, 0x06,    2 /* Public */,
+       5,    0,   66,    2, 0x06,    4 /* Public */,
+       6,    2,   67,    2, 0x06,    5 /* Public */,
+       9,    1,   72,    2, 0x06,    8 /* Public */,
 
  // slots: name, argc, parameters, tag, flags, initial metatype offsets
-       9,    1,   66,    2, 0x0a,    8 /* Public */,
-      11,    2,   69,    2, 0x0a,   10 /* Public */,
-      12,    1,   74,    2, 0x0a,   13 /* Public */,
+      11,    1,   75,    2, 0x0a,   10 /* Public */,
+      13,    2,   78,    2, 0x0a,   12 /* Public */,
+      14,    1,   83,    2, 0x0a,   15 /* Public */,
 
  // signals: parameters
     QMetaType::Void,
     QMetaType::Void, QMetaType::QString,    4,
     QMetaType::Void,
-    QMetaType::Void, QMetaType::Int, QMetaType::Bool,    7,    8,
+    QMetaType::Void, QMetaType::Int, QMetaType::Int,    7,    8,
+    QMetaType::Void, QMetaType::QString,   10,
 
  // slots: parameters
-    QMetaType::Void, QMetaType::QImage,   10,
-    QMetaType::Void, QMetaType::QImage, QMetaType::QString,   10,    4,
-    QMetaType::Void, QMetaType::QString,   13,
+    QMetaType::Void, QMetaType::QImage,   12,
+    QMetaType::Void, QMetaType::QImage, QMetaType::QString,   12,    4,
+    QMetaType::Void, QMetaType::QString,   15,
 
        0        // eod
 };
@@ -108,23 +112,26 @@ Q_CONSTINIT const QMetaObject MainWindow::staticMetaObject = { {
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         // method 'reqSave'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
-        QtPrivate::TypeAndForceComplete<QString, std::false_type>,
+        QtPrivate::TypeAndForceComplete<const QString &, std::false_type>,
         // method 'reqDiscard'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         // method 'reqAdjust'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         QtPrivate::TypeAndForceComplete<int, std::false_type>,
-        QtPrivate::TypeAndForceComplete<bool, std::false_type>,
+        QtPrivate::TypeAndForceComplete<int, std::false_type>,
+        // method 'reqExportToUsb'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        QtPrivate::TypeAndForceComplete<QString, std::false_type>,
         // method 'updateLiveView'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
-        QtPrivate::TypeAndForceComplete<QImage, std::false_type>,
+        QtPrivate::TypeAndForceComplete<const QImage &, std::false_type>,
         // method 'showReviewMode'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
-        QtPrivate::TypeAndForceComplete<QImage, std::false_type>,
-        QtPrivate::TypeAndForceComplete<QString, std::false_type>,
+        QtPrivate::TypeAndForceComplete<const QImage &, std::false_type>,
+        QtPrivate::TypeAndForceComplete<const QString &, std::false_type>,
         // method 'showMessage'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
-        QtPrivate::TypeAndForceComplete<QString, std::false_type>
+        QtPrivate::TypeAndForceComplete<const QString &, std::false_type>
     >,
     nullptr
 } };
@@ -137,10 +144,11 @@ void MainWindow::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
         case 0: _t->reqCapture(); break;
         case 1: _t->reqSave((*reinterpret_cast< std::add_pointer_t<QString>>(_a[1]))); break;
         case 2: _t->reqDiscard(); break;
-        case 3: _t->reqAdjust((*reinterpret_cast< std::add_pointer_t<int>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<bool>>(_a[2]))); break;
-        case 4: _t->updateLiveView((*reinterpret_cast< std::add_pointer_t<QImage>>(_a[1]))); break;
-        case 5: _t->showReviewMode((*reinterpret_cast< std::add_pointer_t<QImage>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<QString>>(_a[2]))); break;
-        case 6: _t->showMessage((*reinterpret_cast< std::add_pointer_t<QString>>(_a[1]))); break;
+        case 3: _t->reqAdjust((*reinterpret_cast< std::add_pointer_t<int>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<int>>(_a[2]))); break;
+        case 4: _t->reqExportToUsb((*reinterpret_cast< std::add_pointer_t<QString>>(_a[1]))); break;
+        case 5: _t->updateLiveView((*reinterpret_cast< std::add_pointer_t<QImage>>(_a[1]))); break;
+        case 6: _t->showReviewMode((*reinterpret_cast< std::add_pointer_t<QImage>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<QString>>(_a[2]))); break;
+        case 7: _t->showMessage((*reinterpret_cast< std::add_pointer_t<QString>>(_a[1]))); break;
         default: ;
         }
     }
@@ -154,7 +162,7 @@ void MainWindow::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
             }
         }
         {
-            using _q_method_type = void (MainWindow::*)(QString );
+            using _q_method_type = void (MainWindow::*)(const QString & );
             if (_q_method_type _q_method = &MainWindow::reqSave; *reinterpret_cast<_q_method_type *>(_a[1]) == _q_method) {
                 *result = 1;
                 return;
@@ -168,9 +176,16 @@ void MainWindow::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
             }
         }
         {
-            using _q_method_type = void (MainWindow::*)(int , bool );
+            using _q_method_type = void (MainWindow::*)(int , int );
             if (_q_method_type _q_method = &MainWindow::reqAdjust; *reinterpret_cast<_q_method_type *>(_a[1]) == _q_method) {
                 *result = 3;
+                return;
+            }
+        }
+        {
+            using _q_method_type = void (MainWindow::*)(QString );
+            if (_q_method_type _q_method = &MainWindow::reqExportToUsb; *reinterpret_cast<_q_method_type *>(_a[1]) == _q_method) {
+                *result = 4;
                 return;
             }
         }
@@ -196,14 +211,14 @@ int MainWindow::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 7)
+        if (_id < 8)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 7;
+        _id -= 8;
     }
     if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 7)
+        if (_id < 8)
             *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType();
-        _id -= 7;
+        _id -= 8;
     }
     return _id;
 }
@@ -215,7 +230,7 @@ void MainWindow::reqCapture()
 }
 
 // SIGNAL 1
-void MainWindow::reqSave(QString _t1)
+void MainWindow::reqSave(const QString & _t1)
 {
     void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t1))) };
     QMetaObject::activate(this, &staticMetaObject, 1, _a);
@@ -228,9 +243,16 @@ void MainWindow::reqDiscard()
 }
 
 // SIGNAL 3
-void MainWindow::reqAdjust(int _t1, bool _t2)
+void MainWindow::reqAdjust(int _t1, int _t2)
 {
     void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t1))), const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t2))) };
     QMetaObject::activate(this, &staticMetaObject, 3, _a);
+}
+
+// SIGNAL 4
+void MainWindow::reqExportToUsb(QString _t1)
+{
+    void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t1))) };
+    QMetaObject::activate(this, &staticMetaObject, 4, _a);
 }
 QT_WARNING_POP

@@ -57,6 +57,8 @@ static constexpr auto qt_meta_stringdata_ZN17BackendControllerE = QtMocHelpers::
     "deleteFile",
     "fileName",
     "refreshFileList",
+    "loadSavedImage",
+    "exportToUsb",
     "processCameraFrame",
     "cv::Mat",
     "frame",
@@ -74,7 +76,7 @@ Q_CONSTINIT static const uint qt_meta_data_ZN17BackendControllerE[] = {
       12,       // revision
        0,       // classname
        0,    0, // classinfo
-      12,   14, // methods
+      14,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -82,20 +84,22 @@ Q_CONSTINIT static const uint qt_meta_data_ZN17BackendControllerE[] = {
        4,       // signalCount
 
  // signals: name, argc, parameters, tag, flags, initial metatype offsets
-       1,    1,   86,    2, 0x06,    1 /* Public */,
-       4,    2,   89,    2, 0x06,    3 /* Public */,
-       6,    1,   94,    2, 0x06,    6 /* Public */,
-       8,    1,   97,    2, 0x06,    8 /* Public */,
+       1,    1,   98,    2, 0x06,    1 /* Public */,
+       4,    2,  101,    2, 0x06,    3 /* Public */,
+       6,    1,  106,    2, 0x06,    6 /* Public */,
+       8,    1,  109,    2, 0x06,    8 /* Public */,
 
  // slots: name, argc, parameters, tag, flags, initial metatype offsets
-      10,    0,  100,    2, 0x0a,   10 /* Public */,
-      11,    1,  101,    2, 0x0a,   11 /* Public */,
-      13,    0,  104,    2, 0x0a,   13 /* Public */,
-      14,    2,  105,    2, 0x0a,   14 /* Public */,
-      17,    1,  110,    2, 0x0a,   17 /* Public */,
-      19,    0,  113,    2, 0x0a,   19 /* Public */,
-      20,    1,  114,    2, 0x08,   20 /* Private */,
-      23,    1,  117,    2, 0x08,   22 /* Private */,
+      10,    0,  112,    2, 0x0a,   10 /* Public */,
+      11,    1,  113,    2, 0x0a,   11 /* Public */,
+      13,    0,  116,    2, 0x0a,   13 /* Public */,
+      14,    2,  117,    2, 0x0a,   14 /* Public */,
+      17,    1,  122,    2, 0x0a,   17 /* Public */,
+      19,    0,  125,    2, 0x0a,   19 /* Public */,
+      20,    1,  126,    2, 0x0a,   20 /* Public */,
+      21,    1,  129,    2, 0x0a,   22 /* Public */,
+      22,    1,  132,    2, 0x08,   24 /* Private */,
+      25,    1,  135,    2, 0x08,   26 /* Private */,
 
  // signals: parameters
     QMetaType::Void, QMetaType::QImage,    3,
@@ -110,8 +114,10 @@ Q_CONSTINIT static const uint qt_meta_data_ZN17BackendControllerE[] = {
     QMetaType::Void, QMetaType::Int, QMetaType::Bool,   15,   16,
     QMetaType::Void, QMetaType::QString,   18,
     QMetaType::Void,
-    QMetaType::Void, 0x80000000 | 21,   22,
-    QMetaType::Void, 0x80000000 | 24,   25,
+    QMetaType::Void, QMetaType::QString,   18,
+    QMetaType::Void, QMetaType::QString,   18,
+    QMetaType::Void, 0x80000000 | 23,   24,
+    QMetaType::Void, 0x80000000 | 26,   27,
 
        0        // eod
 };
@@ -154,6 +160,12 @@ Q_CONSTINIT const QMetaObject BackendController::staticMetaObject = { {
         QtPrivate::TypeAndForceComplete<const QString &, std::false_type>,
         // method 'refreshFileList'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        // method 'loadSavedImage'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        QtPrivate::TypeAndForceComplete<const QString &, std::false_type>,
+        // method 'exportToUsb'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        QtPrivate::TypeAndForceComplete<const QString &, std::false_type>,
         // method 'processCameraFrame'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         QtPrivate::TypeAndForceComplete<cv::Mat, std::false_type>,
@@ -179,15 +191,17 @@ void BackendController::qt_static_metacall(QObject *_o, QMetaObject::Call _c, in
         case 7: _t->adjustImage((*reinterpret_cast< std::add_pointer_t<int>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<bool>>(_a[2]))); break;
         case 8: _t->deleteFile((*reinterpret_cast< std::add_pointer_t<QString>>(_a[1]))); break;
         case 9: _t->refreshFileList(); break;
-        case 10: _t->processCameraFrame((*reinterpret_cast< std::add_pointer_t<cv::Mat>>(_a[1]))); break;
-        case 11: _t->handleAiResult((*reinterpret_cast< std::add_pointer_t<FrameResult>>(_a[1]))); break;
+        case 10: _t->loadSavedImage((*reinterpret_cast< std::add_pointer_t<QString>>(_a[1]))); break;
+        case 11: _t->exportToUsb((*reinterpret_cast< std::add_pointer_t<QString>>(_a[1]))); break;
+        case 12: _t->processCameraFrame((*reinterpret_cast< std::add_pointer_t<cv::Mat>>(_a[1]))); break;
+        case 13: _t->handleAiResult((*reinterpret_cast< std::add_pointer_t<FrameResult>>(_a[1]))); break;
         default: ;
         }
     }
     if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
         switch (_id) {
         default: *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType(); break;
-        case 11:
+        case 13:
             switch (*reinterpret_cast<int*>(_a[1])) {
             default: *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType(); break;
             case 0:
@@ -248,14 +262,14 @@ int BackendController::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 12)
+        if (_id < 14)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 12;
+        _id -= 14;
     }
     if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 12)
+        if (_id < 14)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 12;
+        _id -= 14;
     }
     return _id;
 }

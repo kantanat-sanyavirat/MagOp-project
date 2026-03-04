@@ -2,58 +2,57 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QStackedWidget>
 #include <QLabel>
 #include <QPushButton>
-#include <QStackedWidget>
-#include <QLineEdit>
 #include <QVBoxLayout>
-#include <QImage>
+#include <QHBoxLayout>
+#include <QListWidget>
+#include <QStatusBar>
 
-class MainWindow : public QMainWindow
-{
+class MainWindow : public QMainWindow {
     Q_OBJECT
 
 public:
-    explicit MainWindow(QWidget *parent = nullptr);
+    MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-signals:
-    // ส่งคำสั่งไป Backend
-    void reqCapture();
-    void reqSave(QString text);
-    void reqDiscard();
-    void reqAdjust(int bright, bool denoise);
-
 public slots:
-    // รับข้อมูลจาก Backend มาแสดงผล
-    void updateLiveView(QImage img);
-    void showReviewMode(QImage img, QString text);
-    void showMessage(QString msg);
+    void updateLiveView(const QImage &image);
+    void showReviewMode(const QImage &image, const QString &text);
+    void showMessage(const QString &msg);
+
+signals:
+    void reqCapture();
+    void reqSave(const QString &text);
+    void reqDiscard();
+    void reqAdjust(int brightness, int contrast);
+    void reqExportToUsb(QString fileName);
 
 private:
-    void setupUi();
-
     QStackedWidget *stackedWidget;
-    
-    // --- Page 1: Live ---
-    QWidget *livePage;
-    QLabel *liveImageLabel;
+
+    // Page 1: Capture
+    QWidget *pageCapture;
+    QLabel *liveViewLabel;
     QPushButton *btnScan;
-    QLabel *statusLabel;
+    QPushButton *btnGoHistory;
 
-    // --- Page 2: Review ---
-    QWidget *reviewPage;
-    QLabel *reviewImageLabel;
-    QLineEdit *textEdit; 
-    QPushButton *btnLightUp;
-    QPushButton *btnLightDown;
-    QPushButton *btnDenoise;
+    // Page 2: Review
+    QWidget *pageReview;
+    QLabel *previewLabel;
     QPushButton *btnSave;
-    QPushButton *btnDiscard;
-    
-    // State สำหรับการแต่งภาพ
-    int currentBrightness = 0;
-    bool isDenoise = false;
-};
+    QString currentFileName; // ตัวแปรสำหรับจำว่าตอนนี้เปิดไฟล์ไหนอยู่
+    QPushButton *btnReviewDelete;
+    QPushButton *btnReviewBack;
 
-#endif // MAINWINDOW_H
+    // Page 3: History
+    QWidget *pageHistory;
+    QListWidget *historyList;
+    QPushButton *btnBack;
+
+    void setupUI(); 
+    void refreshHistoryList();
+    void loadSavedImage(const QString &fileName); // ฟังก์ชันสำหรับโหลดรูปเก่ามาโชว์
+};
+#endif

@@ -23,6 +23,7 @@ int main(int argc, char *argv[]) {
     QObject::connect(&window, &MainWindow::reqSave,    &backend, &BackendController::save);
     QObject::connect(&window, &MainWindow::reqDiscard, &backend, &BackendController::discard);
     QObject::connect(&window, &MainWindow::reqAdjust,  &backend, &BackendController::adjustImage);
+    QObject::connect(&window, &MainWindow::reqExportToUsb, &backend, &BackendController::exportToUsb);
 
     window.show();
     backend.start(); 

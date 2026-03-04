@@ -581,26 +581,44 @@ CMakeFiles/MagOp_app.dir/MagOp_app_autogen/mocs_compilation.cpp.o: \
  /usr/include/aarch64-linux-gnu/qt6/QtGui/qcursor.h \
  /usr/include/aarch64-linux-gnu/qt6/QtGui/qbitmap.h \
  /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qtabwidget.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtWidgets/QStackedWidget \
+ /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qstackedwidget.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qframe.h \
  /usr/include/aarch64-linux-gnu/qt6/QtWidgets/QLabel \
  /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qlabel.h \
- /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qframe.h \
  /usr/include/aarch64-linux-gnu/qt6/QtGui/qpicture.h \
  /usr/include/aarch64-linux-gnu/qt6/QtGui/qtextdocument.h \
  /usr/include/aarch64-linux-gnu/qt6/QtCore/qurl.h \
  /usr/include/aarch64-linux-gnu/qt6/QtWidgets/QPushButton \
  /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qpushbutton.h \
  /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qabstractbutton.h \
- /usr/include/aarch64-linux-gnu/qt6/QtWidgets/QStackedWidget \
- /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qstackedwidget.h \
- /usr/include/aarch64-linux-gnu/qt6/QtWidgets/QLineEdit \
- /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qlineedit.h \
- /usr/include/aarch64-linux-gnu/qt6/QtGui/qtextcursor.h \
- /usr/include/aarch64-linux-gnu/qt6/QtGui/qtextformat.h \
- /usr/include/aarch64-linux-gnu/qt6/QtGui/qpen.h \
- /usr/include/aarch64-linux-gnu/qt6/QtGui/qtextoption.h \
  /usr/include/aarch64-linux-gnu/qt6/QtWidgets/QVBoxLayout \
  /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qboxlayout.h \
  /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qlayout.h \
  /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qlayoutitem.h \
  /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qboxlayout.h \
- /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qgridlayout.h
+ /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qgridlayout.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtWidgets/QHBoxLayout \
+ /usr/include/aarch64-linux-gnu/qt6/QtWidgets/QListWidget \
+ /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qlistwidget.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qlistview.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qabstractitemview.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qabstractscrollarea.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/qabstractitemmodel.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/qitemselectionmodel.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qabstractitemdelegate.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qstyleoption.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qabstractspinbox.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtGui/qvalidator.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/qregularexpression.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qslider.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qabstractslider.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qstyle.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qtabbar.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qrubberband.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtWidgets/QStatusBar \
+ /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qstatusbar.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtGui/qtextcursor.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtGui/qtextformat.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtGui/qpen.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtGui/qtextoption.h
