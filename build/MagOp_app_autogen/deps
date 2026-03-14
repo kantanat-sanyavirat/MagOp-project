@@ -109,6 +109,7 @@ MagOp_app_autogen/timestamp: \
 	/usr/include/aarch64-linux-gnu/qt6/QtCore/QMetaType \
 	/usr/include/aarch64-linux-gnu/qt6/QtCore/QMutex \
 	/usr/include/aarch64-linux-gnu/qt6/QtCore/QObject \
+	/usr/include/aarch64-linux-gnu/qt6/QtCore/QRegularExpression \
 	/usr/include/aarch64-linux-gnu/qt6/QtCore/QThread \
 	/usr/include/aarch64-linux-gnu/qt6/QtCore/QTimer \
 	/usr/include/aarch64-linux-gnu/qt6/QtCore/q20functional.h \
@@ -266,6 +267,7 @@ MagOp_app_autogen/timestamp: \
 	/usr/include/aarch64-linux-gnu/qt6/QtGui/qkeysequence.h \
 	/usr/include/aarch64-linux-gnu/qt6/QtGui/qpaintdevice.h \
 	/usr/include/aarch64-linux-gnu/qt6/QtGui/qpalette.h \
+	/usr/include/aarch64-linux-gnu/qt6/QtGui/qpen.h \
 	/usr/include/aarch64-linux-gnu/qt6/QtGui/qpicture.h \
 	/usr/include/aarch64-linux-gnu/qt6/QtGui/qpixelformat.h \
 	/usr/include/aarch64-linux-gnu/qt6/QtGui/qpixmap.h \
@@ -273,7 +275,10 @@ MagOp_app_autogen/timestamp: \
 	/usr/include/aarch64-linux-gnu/qt6/QtGui/qregion.h \
 	/usr/include/aarch64-linux-gnu/qt6/QtGui/qrgb.h \
 	/usr/include/aarch64-linux-gnu/qt6/QtGui/qrgba64.h \
+	/usr/include/aarch64-linux-gnu/qt6/QtGui/qtextcursor.h \
 	/usr/include/aarch64-linux-gnu/qt6/QtGui/qtextdocument.h \
+	/usr/include/aarch64-linux-gnu/qt6/QtGui/qtextformat.h \
+	/usr/include/aarch64-linux-gnu/qt6/QtGui/qtextoption.h \
 	/usr/include/aarch64-linux-gnu/qt6/QtGui/qtgui-config.h \
 	/usr/include/aarch64-linux-gnu/qt6/QtGui/qtguiexports.h \
 	/usr/include/aarch64-linux-gnu/qt6/QtGui/qtguiglobal.h \
@@ -282,8 +287,10 @@ MagOp_app_autogen/timestamp: \
 	/usr/include/aarch64-linux-gnu/qt6/QtGui/qwindowdefs.h \
 	/usr/include/aarch64-linux-gnu/qt6/QtWidgets/QHBoxLayout \
 	/usr/include/aarch64-linux-gnu/qt6/QtWidgets/QLabel \
+	/usr/include/aarch64-linux-gnu/qt6/QtWidgets/QLineEdit \
 	/usr/include/aarch64-linux-gnu/qt6/QtWidgets/QListWidget \
 	/usr/include/aarch64-linux-gnu/qt6/QtWidgets/QMainWindow \
+	/usr/include/aarch64-linux-gnu/qt6/QtWidgets/QMessageBox \
 	/usr/include/aarch64-linux-gnu/qt6/QtWidgets/QPushButton \
 	/usr/include/aarch64-linux-gnu/qt6/QtWidgets/QStackedWidget \
 	/usr/include/aarch64-linux-gnu/qt6/QtWidgets/QStatusBar \
@@ -295,14 +302,18 @@ MagOp_app_autogen/timestamp: \
 	/usr/include/aarch64-linux-gnu/qt6/QtWidgets/qabstractslider.h \
 	/usr/include/aarch64-linux-gnu/qt6/QtWidgets/qabstractspinbox.h \
 	/usr/include/aarch64-linux-gnu/qt6/QtWidgets/qboxlayout.h \
+	/usr/include/aarch64-linux-gnu/qt6/QtWidgets/qdialog.h \
+	/usr/include/aarch64-linux-gnu/qt6/QtWidgets/qdialogbuttonbox.h \
 	/usr/include/aarch64-linux-gnu/qt6/QtWidgets/qframe.h \
 	/usr/include/aarch64-linux-gnu/qt6/QtWidgets/qgridlayout.h \
 	/usr/include/aarch64-linux-gnu/qt6/QtWidgets/qlabel.h \
 	/usr/include/aarch64-linux-gnu/qt6/QtWidgets/qlayout.h \
 	/usr/include/aarch64-linux-gnu/qt6/QtWidgets/qlayoutitem.h \
+	/usr/include/aarch64-linux-gnu/qt6/QtWidgets/qlineedit.h \
 	/usr/include/aarch64-linux-gnu/qt6/QtWidgets/qlistview.h \
 	/usr/include/aarch64-linux-gnu/qt6/QtWidgets/qlistwidget.h \
 	/usr/include/aarch64-linux-gnu/qt6/QtWidgets/qmainwindow.h \
+	/usr/include/aarch64-linux-gnu/qt6/QtWidgets/qmessagebox.h \
 	/usr/include/aarch64-linux-gnu/qt6/QtWidgets/qpushbutton.h \
 	/usr/include/aarch64-linux-gnu/qt6/QtWidgets/qrubberband.h \
 	/usr/include/aarch64-linux-gnu/qt6/QtWidgets/qsizepolicy.h \

@@ -618,7 +618,15 @@ CMakeFiles/MagOp_app.dir/MagOp_app_autogen/mocs_compilation.cpp.o: \
  /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qrubberband.h \
  /usr/include/aarch64-linux-gnu/qt6/QtWidgets/QStatusBar \
  /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qstatusbar.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtWidgets/QLineEdit \
+ /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qlineedit.h \
  /usr/include/aarch64-linux-gnu/qt6/QtGui/qtextcursor.h \
  /usr/include/aarch64-linux-gnu/qt6/QtGui/qtextformat.h \
  /usr/include/aarch64-linux-gnu/qt6/QtGui/qpen.h \
- /usr/include/aarch64-linux-gnu/qt6/QtGui/qtextoption.h
+ /usr/include/aarch64-linux-gnu/qt6/QtGui/qtextoption.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtWidgets/QMessageBox \
+ /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qmessagebox.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qdialog.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtWidgets/qdialogbuttonbox.h \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/QRegularExpression \
+ /usr/include/aarch64-linux-gnu/qt6/QtCore/qregularexpression.h

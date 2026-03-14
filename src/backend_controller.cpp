@@ -1,266 +1,227 @@
 #include "backend_controller.h"
 #include <QDateTime>
 #include <QFile>
-#include <QJsonDocument>
-#include <QJsonObject>
+#include <QTextStream>
+#include <QProcess>
+#include <QPainter>
 #include <QDebug>
-#include <iostream>
-#include <QDir>
+
+// ─────────────────────────────────────────────────────────────
+// Constructor / Destructor
+// ─────────────────────────────────────────────────────────────
 
 BackendController::BackendController(QObject *parent) : QObject(parent) {
-    aiThread = new QThread();
+    // ① ตั้งค่า AI Processor ให้ทำงานบน Thread แยก เพื่อไม่ให้ UI กระตุก
+    aiThread    = new QThread();
     aiProcessor = new AI_Processing();
     aiProcessor->moveToThread(aiThread);
     aiThread->start();
 
+    // ② ตั้งค่ากล้อง
     camera = new CameraHandler();
 
-    connect(camera, &CameraHandler::frameReady, this, &BackendController::processCameraFrame);
-    connect(aiProcessor, &AI_Processing::resultReady, this, &BackendController::handleAiResult);
-    
-    qDebug() << "Backend: Initialized.";
+    // ③ เชื่อม Signal ภายใน
+    connect(camera,      &CameraHandler::frameReady,     this, &BackendController::processCameraFrame);
+    connect(aiProcessor, &AI_Processing::resultReady,    this, &BackendController::handleAiResult);
+
+    // สร้างโฟลเดอร์เก็บรูปถ้ายังไม่มี
+    QDir().mkpath(SAVE_PATH);
 }
 
-// *** ต้องมี Destructor ให้ตรงกับที่ประกาศไว้ ***
 BackendController::~BackendController() {
     camera->stopCamera();
-    if(aiThread->isRunning()) {
-        aiThread->quit();
-        aiThread->wait();
-    }
+    aiThread->quit();
+    aiThread->wait();
     delete aiProcessor;
     delete aiThread;
     delete camera;
-    qDebug() << "Backend: Destroyed.";
 }
 
-// *** เพิ่มฟังก์ชัน start() ที่หายไป ***
+// ─────────────────────────────────────────────────────────────
+// Public Methods
+// ─────────────────────────────────────────────────────────────
+
 void BackendController::start() {
-    qDebug() << "Backend: Starting camera...";
-    camera->startCamera(0); 
+    camera->startCamera(0); // เปิดกล้อง index 0
 }
 
-void BackendController::processCameraFrame(cv::Mat frame) {
-    if (frame.empty()) return;
+// ─────────────────────────────────────────────────────────────
+// Private Slots — จัดการข้อมูลภายใน
+// ─────────────────────────────────────────────────────────────
 
-    // ถ้าได้ภาพมาแล้ว ให้ลบข้อความ Error (ถ้ามี)
-    static bool lastStateWasEmpty = false;
-    if (lastStateWasEmpty) {
-        emit statusMessage("Camera Reconnected");
-        lastStateWasEmpty = false;
+// รับ Frame จากกล้อง → เก็บไว้รอ Capture → ส่งต่อให้ UI แสดง
+void BackendController::processCameraFrame(const cv::Mat &frame) {
+    if (frame.empty()) {
+        // กล้องหลุด — แจ้ง UI ให้ disable ปุ่ม SCAN
+        if (cameraConnected) {
+            cameraConnected = false;
+            emit cameraReady(false);
+        }
+        return;
     }
-
+    // Frame แรกที่ได้ — แจ้ง UI ว่าเจอกล้องแล้ว
+    if (!cameraConnected) {
+        cameraConnected = true;
+        emit cameraReady(true);
+    }
     currentLiveFrame = frame.clone();
     emit frameReady(matToQImage(frame));
 }
 
-void BackendController::loadSavedImage(const QString &fileName) {
-    QString filePath = QDir::homePath() + "/MagOp-project/ai_output/" + fileName;
-    
-    cv::Mat loadedMat = cv::imread(filePath.toStdString());
-    
-    if (!loadedMat.empty()) {
-        m_lastSavedFile = fileName; // <--- เพิ่มบรรทัดนี้ เพื่อให้ลบรูปที่โหลดมาจาก History ได้
-        
-        currentEditedImage = loadedMat.clone();
-        originalCvImage = loadedMat.clone();
-        currentText = fileName;
-        
-        emit reviewReady(matToQImage(currentEditedImage), currentText);
-        emit statusMessage("Viewing: " + fileName);
+// รับผลลัพธ์จาก AI → วาดกรอบ → ส่งไปหน้า Review
+void BackendController::handleAiResult(const FrameResult &result) {
+    // ดึงข้อมูล Detection ตัวแรก (ถ้าไม่มีให้ใช้ค่า default)
+    currentAiLabel = result.detections.empty() ? "Unknown"                       : result.detections[0].label;
+    currentX       = result.detections.empty() ? 50                              : result.detections[0].boundingBox.x;
+    currentY       = result.detections.empty() ? 50                              : result.detections[0].boundingBox.y;
+
+    // วาด Bounding Box บนภาพต้นฉบับ
+    cv::Mat previewMat = result.originalImage.clone();
+    cv::rectangle(previewMat,
+                  cv::Rect(currentX, currentY, 250, 200),
+                  cv::Scalar(0, 255, 0), 3);
+
+    // ตั้งชื่อไฟล์ตาม Timestamp ป้องกันชื่อซ้ำ
+    currentFileName = "SCAN_" + QDateTime::currentDateTime().toString("yyyyMMdd_HHmmss") + ".jpg";
+
+    // [แก้ไข] emit เพียง signal เดียว (ลบ reviewReady ออกแล้ว)
+    emit resultReady(matToQImage(previewMat), currentFileName);
+}
+
+// ─────────────────────────────────────────────────────────────
+// Public Slots — รับคำสั่งจาก UI
+// ─────────────────────────────────────────────────────────────
+
+void BackendController::capture() {
+    if (currentLiveFrame.empty()) {
+        emit statusMessage("กล้องยังไม่พร้อม!");
+        return;
+    }
+
+    emit statusMessage("กำลังประมวลผล AI...");
+    lastCapturedFrame = currentLiveFrame.clone(); // เก็บ Frame นิ่งไว้ใช้ตอน Save
+
+    // ── Mockup AI Result ─────────────────────────────────────
+    // TODO: แทนที่ block นี้ด้วย aiProcessor->process(lastCapturedFrame) เมื่อพร้อม
+    FrameResult mock;
+    mock.originalImage = lastCapturedFrame;
+    mock.timestamp     = QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss");
+
+    Detection d;
+    d.label       = "Product_A";
+    d.boundingBox = cv::Rect(100, 100, 250, 200);
+    mock.detections.push_back(d);
+
+    handleAiResult(mock);
+    // ─────────────────────────────────────────────────────────
+}
+
+void BackendController::save(const QString &userText) {
+    if (lastCapturedFrame.empty()) {
+        emit statusMessage("ไม่มีภาพให้บันทึก");
+        return;
+    }
+
+    // ① วาด Bounding Box บนภาพต้นฉบับ
+    cv::Mat saveMat = lastCapturedFrame.clone();
+    cv::rectangle(saveMat,
+                  cv::Rect(currentX, currentY, 250, 200),
+                  cv::Scalar(0, 255, 0), 3);
+
+    // ② วาด Label ด้วย QPainter (รองรับภาษาไทย ต่างจาก cv::putText)
+    QImage img = matToQImage(saveMat);
+    QPainter painter(&img);
+    painter.setFont(QFont("Sans", 30, QFont::Bold));
+    painter.setPen(Qt::green);
+    painter.drawText(currentX, currentY - 10, userText);
+    painter.end();
+
+    // ③ บันทึกลง Disk
+    if (img.save(SAVE_PATH + "/" + currentFileName, "JPG")) {
+        // บันทึก label ลงไฟล์ .txt คู่กัน
+        QString labelFileName = currentFileName;
+        labelFileName.replace(".jpg", ".txt", Qt::CaseInsensitive);
+        QFile labelFile(SAVE_PATH + "/" + labelFileName);
+        if (labelFile.open(QIODevice::WriteOnly | QIODevice::Text))
+            QTextStream(&labelFile) << userText;
+
+        emit statusMessage("บันทึกสำเร็จ: " + currentFileName);
+        refreshFileList();
+
+        // ส่งออกไป USB ทันทีหลังบันทึก (ถ้าไม่มี USB ก็แค่ขึ้นแจ้งเตือน ไม่ error)
+        exportToUsb(currentFileName);
     } else {
-        emit statusMessage("Load Failed!");
+        emit statusMessage("บันทึกล้มเหลว ตรวจสอบพื้นที่ว่าง");
+    }
+}
+
+void BackendController::discard() {
+    if (currentFileName.isEmpty()) return;
+
+    // [แก้ไข] เช็คว่าไฟล์มีอยู่จริงก่อนลบ ป้องกัน error กรณีกด DELETE ก่อน SAVE
+    const QString fullPath = SAVE_PATH + "/" + currentFileName;
+    if (QFile::exists(fullPath)) {
+        QFile::remove(fullPath);
+
+        // ลบไฟล์ .txt label คู่กันด้วย
+        QString labelPath = fullPath;
+        labelPath.replace(".jpg", ".txt", Qt::CaseInsensitive);
+        QFile::remove(labelPath);
+
+        emit statusMessage("ลบไฟล์สำเร็จ: " + currentFileName);
+        refreshFileList();
+    } else {
+        emit statusMessage("ยกเลิกการบันทึก");
     }
 }
 
 void BackendController::exportToUsb(const QString &fileName) {
-    QString sourcePath = QDir::homePath() + "/MagOp-project/ai_output/" + fileName;
-    QString userName = qEnvironmentVariable("USER");
-    if (userName.isEmpty()) userName = "kantanat"; 
+    // ค้นหา USB Drive ที่ mount อยู่ใน /media/<username>/
+    QDir mediaDir("/media/" + qgetenv("USER"));
+    const QStringList drives = mediaDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
 
-    QDir mediaDir("/media/" + userName);
-    QStringList drives = mediaDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
-
-    if (!drives.isEmpty()) {
-        QString usbTargetPath = mediaDir.absoluteFilePath(drives.first()) + "/" + fileName;
-        if (QFile::copy(sourcePath, usbTargetPath)) {
-            emit statusMessage("Export to USB Success!");
-        } else {
-            emit statusMessage("USB Error or File Exists!");
-        }
-    } else {
-        emit statusMessage("No USB Found!");
-    }
-}
-
-void BackendController::capture() {
-    if (!currentLiveFrame.empty()) {
-        emit statusMessage("Processing AI...");
-        aiProcessor->addFrameToQueue(currentLiveFrame);
-    } else {
-        emit statusMessage("Camera not ready!");
-    }
-}
-
-void BackendController::handleAiResult(FrameResult result) {
-    originalCvImage = result.originalImage.clone(); 
-    currentEditedImage = result.originalImage.clone(); 
-    currentTimestamp = result.timestamp;
-    
-    if (result.detections.empty()) {
-        currentText = "No Object";
-        currentX = 50; // กำหนดค่าเริ่มต้นถ้าไม่เจอวัตถุ
-        currentY = 50;
-    } else {
-        currentText = result.detections[0].label;
-        // --- เพิ่ม 2 บรรทัดนี้ ---
-        currentX = result.detections[0].boundingBox.x;
-        currentY = result.detections[0].boundingBox.y;
-    }
-    emit reviewReady(matToQImage(currentEditedImage), currentText);
-}
-
-void BackendController::adjustImage(int brightnessStep, bool denoise) {
-    if (originalCvImage.empty()) return;
-    cv::Mat temp;
-    originalCvImage.convertTo(temp, -1, 1.0, brightnessStep);
-    if (denoise) cv::GaussianBlur(temp, temp, cv::Size(3, 3), 0);
-    currentEditedImage = temp;
-    emit reviewReady(matToQImage(currentEditedImage), currentText); 
-}
-
-// *** เพิ่มฟังก์ชัน save(QString) ให้ตรงกับ Slot ใน Header ***
-void BackendController::save(QString userText) {
-    currentText = userText;
-    saveToDiskAndUsb();
-    emit statusMessage("Saved Successfully");
-    qDebug() << "Backend: Data saved.";
-}
-
-void BackendController::discard() {
-    if (m_lastSavedFile.isEmpty()) {
-        emit statusMessage("No file to discard.");
+    if (drives.isEmpty()) {
+        emit statusMessage("ไม่พบ USB Drive!");
         return;
     }
 
-    QString filePath = QDir::homePath() + "/MagOp-project/ai_output/" + m_lastSavedFile;
-
-    if (QFile::exists(filePath)) {
-        if (QFile::remove(filePath)) {
-            emit statusMessage("Deleted: " + m_lastSavedFile);
-            m_lastSavedFile = ""; 
-        } else {
-            emit statusMessage("Delete Failed!");
-        }
+    // คัดลอกไปยัง Drive แรกที่พบ
+    const QString dest = mediaDir.absoluteFilePath(drives.first()) + "/" + fileName;
+    if (QFile::copy(SAVE_PATH + "/" + fileName, dest)) {
+        // [แก้ไข] ใช้ startDetached แทน execute เพื่อไม่บล็อก UI Thread
+        QProcess::startDetached("sync", {});
+        emit statusMessage("ส่งออกไป USB สำเร็จ");
+    } else {
+        emit statusMessage("ส่งออกล้มเหลว ตรวจสอบพื้นที่ว่าง");
     }
 }
 
 void BackendController::refreshFileList() {
-    QString folderPath = QDir::homePath() + "/MagOp-project/ai_output";
-    QDir dir(folderPath);
-    QStringList filters; filters << "*.jpg";
-    dir.setNameFilters(filters);
-    
-    // เรียงลำดับตามเวลา: ไฟล์ใหม่สุดอยู่บน ไฟล์เก่าสุดอยู่ท้าย
-    dir.setSorting(QDir::Time); 
-    QStringList files = dir.entryList();
-
-    // --- ระบบ Auto-Cleanup: จำกัดไว้ที่ 50 รูป ---
-    int maxFiles = 20; 
-    while (files.size() > maxFiles) {
-        // ลบไฟล์ที่เก่าที่สุด (ไฟล์สุดท้ายในรายการที่เรียงตามเวลา)
-        QString oldFile = files.takeLast(); 
-        if (QFile::exists(folderPath + "/" + oldFile)) {
-            QFile::remove(folderPath + "/" + oldFile);
-        }
-        qDebug() << "Auto-cleanup: Deleted oldest image:" << oldFile;
-    }
-
+    QDir dir(SAVE_PATH);
+    const QStringList files = dir.entryList(
+        QStringList() << "*.jpg",
+        QDir::Files,
+        QDir::Time); // เรียงใหม่สุดก่อน
     emit fileListUpdated(files);
 }
 
-void BackendController::deleteFile(const QString &fileName) {
-    QString folderPath = QDir::homePath() + "/MagOp-project/ai_output";
-    
-    // ลบไฟล์ภาพต้นทาง
-    if (QFile::remove(folderPath + "/" + fileName)) {
-        qDebug() << "Backend: Deleted file" << fileName;
-    }
-    
-    refreshFileList(); // อัปเดตรายการหลังลบ
+void BackendController::adjustImage(int brightnessStep, bool denoise) {
+    // TODO: implement การปรับความสว่างและ Denoise
+    Q_UNUSED(brightnessStep)
+    Q_UNUSED(denoise)
+    emit statusMessage("adjustImage: ยังไม่ implement");
 }
 
-void BackendController::saveToDiskAndUsb() {
-    QString homePath = QDir::homePath();
-    QString localFolder = homePath + "/MagOp-project/ai_output";
-    QDir().mkpath(localFolder);
+// ─────────────────────────────────────────────────────────────
+// Helper
+// ─────────────────────────────────────────────────────────────
 
-    QString fileTimestamp = QDateTime::currentDateTime().toString("yyyyMMdd_HHmmss");
-    QString imgName = QString("RESULT_%1.jpg").arg(fileTimestamp);
-    QString localImgPath = localFolder + "/" + imgName;
-    m_lastSavedFile = imgName;
-
-    // --- ส่วนการวาด Overlay ---
-    cv::Mat overlayImage = currentEditedImage.clone();
-    cv::Scalar color(0, 255, 0);
-    cv::rectangle(overlayImage, cv::Rect(currentX, currentY, 200, 150), color, 2);
-    cv::putText(overlayImage, currentText.toStdString(), 
-                cv::Point(currentX, currentY - 10), 
-                cv::FONT_HERSHEY_SIMPLEX, 0.8, color, 2);
-
-    // เซฟลงเครื่องก่อน
-    if (!cv::imwrite(localImgPath.toStdString(), overlayImage)) {
-        qDebug() << "Failed to save local image!";
-        return;
-    }
-
-    // --- ส่วนการหา USB ของจริง (ปรับปรุงใหม่) ---
-    QString userName = qEnvironmentVariable("USER"); 
-    if (userName.isEmpty()) userName = qEnvironmentVariable("USERNAME"); // เผื่อเคสอื่นๆ
-
-    QDir mediaDir("/media/" + userName);
-    // ดึงรายชื่อ Directory ทั้งหมดใน /media/user/
-    QStringList drives = mediaDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
-    
-    bool usbSaved = false;
-    QString foundDriveName = "";
-
-    for (const QString &drive : drives) {
-        QString usbMountPath = mediaDir.absoluteFilePath(drive);
-        
-        // เช็กว่า Directory นี้ "เขียนได้จริง" หรือไม่ (เพื่อตัดพวก System Folder ออก)
-        QFileInfo driveInfo(usbMountPath);
-        if (driveInfo.isWritable()) {
-            QString targetPath = usbMountPath + "/" + imgName;
-            
-            // ถ้าคัดลอกสำเร็จให้หยุดลูป
-            if (QFile::copy(localImgPath, targetPath)) {
-                usbSaved = true;
-                foundDriveName = drive;
-                qDebug() << "Success: Copied to USB at" << targetPath;
-                break; 
-            }
-        }
-    }
-
-    if (usbSaved) {
-        emit statusMessage("Saved to Local & USB: " + foundDriveName);
-    } else {
-        if (drives.isEmpty()) {
-            emit statusMessage("Local Saved. (No USB found)");
-            qDebug() << "USB Error: No drive detected in /media/" << userName;
-        } else {
-            emit statusMessage("Local Saved, but USB Write Denied!");
-            qDebug() << "USB Error: Found drives but none are writable or copy failed.";
-        }
-    }
-
-    refreshFileList();
-}
-
+// แปลง OpenCV Mat (BGR) → Qt QImage (RGB)
 QImage BackendController::matToQImage(const cv::Mat &mat) {
-    if(mat.empty()) return QImage();
     cv::Mat rgb;
     cv::cvtColor(mat, rgb, cv::COLOR_BGR2RGB);
-    return QImage((const unsigned char*)(rgb.data), rgb.cols, rgb.rows, rgb.step, QImage::Format_RGB888).copy();
+    return QImage(reinterpret_cast<const unsigned char*>(rgb.data),
+                  rgb.cols, rgb.rows,
+                  static_cast<int>(rgb.step),
+                  QImage::Format_RGB888).copy();
 }
