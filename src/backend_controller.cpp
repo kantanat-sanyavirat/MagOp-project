@@ -94,11 +94,11 @@ void BackendController::handleAiResult(const FrameResult &result) {
 
 void BackendController::capture() {
     if (currentLiveFrame.empty()) {
-        emit statusMessage("กล้องยังไม่พร้อม!");
+        emit statusMessage("Camera not ready!");
         return;
     }
 
-    emit statusMessage("กำลังประมวลผล AI...");
+    emit statusMessage("Processing AI...");
     lastCapturedFrame = currentLiveFrame.clone(); // เก็บ Frame นิ่งไว้ใช้ตอน Save
 
     // ── Mockup AI Result ─────────────────────────────────────
@@ -118,7 +118,7 @@ void BackendController::capture() {
 
 void BackendController::save(const QString &userText) {
     if (lastCapturedFrame.empty()) {
-        emit statusMessage("ไม่มีภาพให้บันทึก");
+        emit statusMessage("No image to save");
         return;
     }
 
@@ -145,13 +145,13 @@ void BackendController::save(const QString &userText) {
         if (labelFile.open(QIODevice::WriteOnly | QIODevice::Text))
             QTextStream(&labelFile) << userText;
 
-        emit statusMessage("บันทึกสำเร็จ: " + currentFileName);
+        emit statusMessage("Saved: " + currentFileName);
         refreshFileList();
 
         // ส่งออกไป USB ทันทีหลังบันทึก (ถ้าไม่มี USB ก็แค่ขึ้นแจ้งเตือน ไม่ error)
         exportToUsb(currentFileName);
     } else {
-        emit statusMessage("บันทึกล้มเหลว ตรวจสอบพื้นที่ว่าง");
+        emit statusMessage("Save failed — check disk space");
     }
 }
 
@@ -168,10 +168,10 @@ void BackendController::discard() {
         labelPath.replace(".jpg", ".txt", Qt::CaseInsensitive);
         QFile::remove(labelPath);
 
-        emit statusMessage("ลบไฟล์สำเร็จ: " + currentFileName);
+        emit statusMessage("Deleted: " + currentFileName);
         refreshFileList();
     } else {
-        emit statusMessage("ยกเลิกการบันทึก");
+        emit statusMessage("Cancelled");
     }
 }
 
@@ -181,7 +181,7 @@ void BackendController::exportToUsb(const QString &fileName) {
     const QStringList drives = mediaDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
 
     if (drives.isEmpty()) {
-        emit statusMessage("ไม่พบ USB Drive!");
+        emit statusMessage("No USB drive found!");
         return;
     }
 
@@ -190,9 +190,9 @@ void BackendController::exportToUsb(const QString &fileName) {
     if (QFile::copy(SAVE_PATH + "/" + fileName, dest)) {
         // [แก้ไข] ใช้ startDetached แทน execute เพื่อไม่บล็อก UI Thread
         QProcess::startDetached("sync", {});
-        emit statusMessage("ส่งออกไป USB สำเร็จ");
+        emit statusMessage("Exported to USB successfully");
     } else {
-        emit statusMessage("ส่งออกล้มเหลว ตรวจสอบพื้นที่ว่าง");
+        emit statusMessage("Export failed — check USB space");
     }
 }
 
@@ -209,7 +209,7 @@ void BackendController::adjustImage(int brightnessStep, bool denoise) {
     // TODO: implement การปรับความสว่างและ Denoise
     Q_UNUSED(brightnessStep)
     Q_UNUSED(denoise)
-    emit statusMessage("adjustImage: ยังไม่ implement");
+    emit statusMessage("adjustImage: not implemented");
 }
 
 // ─────────────────────────────────────────────────────────────

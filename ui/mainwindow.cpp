@@ -336,7 +336,7 @@ void MainWindow::setupUI() {
     lblManual->setObjectName("sideLabel");
 
     txtUserInput = new QLineEdit();
-    txtUserInput->setPlaceholderText("ชื่อสินค้า...");
+    txtUserInput->setPlaceholderText("Enter serial number...");
 
     btnSave = new QPushButton("SAVE");
     btnSave->setObjectName("btnSave");
@@ -411,7 +411,7 @@ void MainWindow::setupUI() {
     // ปุ่ม Shutdown → ถามยืนยัน แล้วสั่งปิดเครื่อง Pi อย่างปลอดภัย
     connect(btnShutdown, &QPushButton::clicked, this, [this]() {
         const QMessageBox::StandardButton reply = QMessageBox::question(
-            this, "ปิดเครื่อง", "ต้องการปิดเครื่องหรือไม่?",
+            this, "Shutdown", "Shut down the device?",
             QMessageBox::Yes | QMessageBox::No);
         if (reply != QMessageBox::Yes) return;
 
@@ -451,7 +451,7 @@ void MainWindow::setupUI() {
     // โหมด History   (btnReviewBack แสดง) → กลับหน้า History (2)
     connect(btnReviewDelete, &QPushButton::clicked, this, [this]() {
         const QMessageBox::StandardButton reply = QMessageBox::question(
-            this, "ยืนยันการลบ", "ต้องการลบรูปนี้หรือไม่?",
+            this, "Confirm Delete", "Delete this image?",
             QMessageBox::Yes | QMessageBox::No);
         if (reply != QMessageBox::Yes) return;
 
@@ -525,7 +525,7 @@ void MainWindow::setCameraReady(bool ready) {
     } else {
         // ยังไม่เจอกล้อง — แสดงข้อความแจ้งเตือน
         btnScan->setText("No Camera");
-        statusBar()->showMessage("ไม่พบกล้อง — กรุณาเชื่อมต่ออุปกรณ์แล้วรอสักครู่", 0);
+        statusBar()->showMessage("No camera detected — please connect a camera and wait", 0);
     }
 }
 
@@ -554,7 +554,7 @@ void MainWindow::loadSavedImage(const QString &fileName) {
     QImage img(path);
 
     if (img.isNull()) {
-        showMessage("โหลดรูปไม่สำเร็จ: " + fileName);
+        showMessage("Failed to load image: " + fileName);
         return;
     }
 
@@ -575,7 +575,7 @@ void MainWindow::loadSavedImage(const QString &fileName) {
         txtUserInput->setText(label);
     } else {
         // ไฟล์ .txt ไม่มี (รูปเก่าก่อนมี feature นี้) — แสดง placeholder แทน
-        txtUserInput->setPlaceholderText("ไม่พบ label (รูปเก่า)");
+        txtUserInput->setPlaceholderText("No label found (old image)");
     }
 
     // สลับเป็นโหมด History — ซ่อน Manual Label และ input
