@@ -1,5 +1,0 @@
-/home/kantanat/MagOp-project/build/CMakeFiles/MagOp_app.dir
-/home/kantanat/MagOp-project/build/CMakeFiles/edit_cache.dir
-/home/kantanat/MagOp-project/build/CMakeFiles/rebuild_cache.dir
-/home/kantanat/MagOp-project/build/CMakeFiles/MagOp_app_autogen_timestamp_deps.dir
-/home/kantanat/MagOp-project/build/CMakeFiles/MagOp_app_autogen.dir
