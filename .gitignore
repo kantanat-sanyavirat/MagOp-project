@@ -45,3 +45,21 @@
 
 # JSON files
 *.json
+
+build/
+
+CMakeFiles/
+
+CMakeCache.txt
+
+cmake_install.cmake
+
+Makefile
+
+*.o
+
+*.a
+
+MagOp_app
+
+MagOp_app_autogen/
