@@ -63,3 +63,5 @@ Makefile
 MagOp_app
 
 MagOp_app_autogen/
+
+ai_output/
