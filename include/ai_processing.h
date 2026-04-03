@@ -3,41 +3,72 @@
 
 #include <QObject>
 #include <QMetaType>
-#include <QImage>
 #include <QMutex>
 #include <opencv2/opencv.hpp>
+#include <onnxruntime_cxx_api.h>
 #include <vector>
 #include <deque>
+#include <string>
+
+// ─────────────────────────────────────────────────────────────
+// Model paths — relative to working directory (MagOp-project/)
+// ─────────────────────────────────────────────────────────────
+
+const std::string YOLO_MODEL_PATH    = "models/yolo/yolo.onnx";
+const std::string ANOMALY_MODEL_PATH = "models/anomaly/anomalib_efficientad.onnx";
+const std::string OCR_REC_PATH       = "models/ocr/TH_OCR_FROM_PADDLE.onnx";
+
+// ─────────────────────────────────────────────────────────────
+// Inference config
+// ─────────────────────────────────────────────────────────────
+
+constexpr float YOLO_CONF_THRESHOLD = 0.5f;
+constexpr float YOLO_NMS_THRESHOLD  = 0.45f;
+constexpr float ANOMALY_THRESHOLD   = 0.5f;
+constexpr int   YOLO_INPUT_W        = 640;
+constexpr int   YOLO_INPUT_H        = 640;
+constexpr int   ANOMALY_INPUT_SIZE  = 256;
+constexpr int   OCR_REC_H           = 48;
+
+// PP-OCRv5 charset — must match training charset
+const std::string CHARSET =
+    " !\"#$%&'()*+,-./0123456789:;<=>?@"
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`"
+    "abcdefghijklmnopqrstuvwxyz{|}~";
 
 // ─────────────────────────────────────────────────────────────
 // Data Structures
 // ─────────────────────────────────────────────────────────────
 
 struct Detection {
-    int     id;
-    QString label;
-    float   confidence;
+    int      id;
+    QString  label;
+    float    confidence;
     cv::Rect boundingBox;
 };
 
 struct FrameResult {
-    cv::Mat              originalImage;
-    std::vector<Detection> detections;
-    QString              timestamp;
+    cv::Mat                originalImage;
+    std::vector<Detection> detections;   // YOLOv8 output
+    float                  anomalyScore = 0.0f; // Anomaly model output [0~1]
+    QString                ocrText;     // PP-OCRv5 output
+    QString                timestamp;
 
     FrameResult() {}
-    FrameResult(const FrameResult& other)
-        : originalImage(other.originalImage.clone()),
-          detections(other.detections),
-          timestamp(other.timestamp) {}
+    FrameResult(const FrameResult& o)
+        : originalImage(o.originalImage.clone()),
+          detections(o.detections),
+          anomalyScore(o.anomalyScore),
+          ocrText(o.ocrText),
+          timestamp(o.timestamp) {}
     ~FrameResult() {}
 };
 
-// Register FrameResult so it can be passed through Qt signals across threads
 Q_DECLARE_METATYPE(FrameResult)
 
 // ─────────────────────────────────────────────────────────────
-// AI_Processing — runs inference on a background thread
+// AI_Processing
+// Pipeline: YOLOv8 → Anomaly → PP-OCRv5 (uses YOLO bbox)
 // ─────────────────────────────────────────────────────────────
 
 class AI_Processing : public QObject
@@ -48,24 +79,40 @@ public:
     explicit AI_Processing(QObject *parent = nullptr);
     ~AI_Processing();
 
-    // Add a frame to the processing queue
     void addFrameToQueue(cv::Mat frame);
+    void clearQueue();
+
+    float anomalyThreshold = ANOMALY_THRESHOLD;
 
 signals:
-    // Emitted when a frame has been processed
     void resultReady(FrameResult result);
 
 private slots:
-    // Processes one frame from the queue, then schedules itself again if more remain
     void processNextFrame();
 
 private:
-    // Placeholder for real ONNX/YOLOv8 + PP-OCRv5 inference
-    FrameResult runFakeAI(cv::Mat frame);
+    // ── ONNX Runtime ─────────────────────────────────────────
+    Ort::Env*                          ortEnv      = nullptr;
+    Ort::MemoryInfo*                   memInfo     = nullptr;
+    std::unique_ptr<Ort::Session>      yoloSession;
+    std::unique_ptr<Ort::Session>      anomalySession;
+    std::unique_ptr<Ort::Session>      ocrRecSession;
 
+    // ── Model runners ─────────────────────────────────────────
+    std::vector<Detection> runYOLO(const cv::Mat& frame);
+    float                  runAnomaly(const cv::Mat& frame);
+    QString                runOCR(const cv::Mat& frame,
+                                  const std::vector<Detection>& dets);
+
+    // ── Preprocessing helpers ─────────────────────────────────
+    std::vector<float> preprocessSquare(const cv::Mat& bgr, int size);
+    std::pair<std::vector<float>, int> preprocessRec(const cv::Mat& crop);
+    std::string decodeCTC(const float* data, int steps, int vocabSize);
+
+    // ── Queue ─────────────────────────────────────────────────
     std::deque<cv::Mat> frameQueue;
-    bool   isBusy;
-    QMutex mutex;
+    bool                isBusy = false;
+    QMutex              mutex;
 };
 
 #endif // AI_PROCESSING_H

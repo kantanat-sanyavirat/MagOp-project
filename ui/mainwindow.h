@@ -26,7 +26,7 @@ public slots:
 
     // เปิดหน้า Review พร้อมรูปและชื่อไฟล์ชั่วคราว
     // ใช้ร่วมกันทั้งโหมด "แสกนใหม่" และ "ดูรูปเก่าจาก History"
-    void showReviewMode(const QImage &image, const QString &fileName);
+    void showReviewMode(const QImage &image, const QString &fileName, const QString &ocrText);
 
     // แสดงข้อความแจ้งเตือนที่ StatusBar ด้านล่าง (หายเองใน 3 วินาที)
     void showMessage(const QString &msg);
@@ -41,8 +41,8 @@ signals:
     // ร้องขอให้ Backend ถ่ายภาพจาก Frame ปัจจุบัน
     void reqCapture();
 
-    // ร้องขอให้ Backend บันทึกภาพพร้อมข้อความ Label
-    void reqSave(const QString &text);
+    // ร้องขอให้ Backend บันทึกภาพพร้อมข้อความ Label และ OCR text เดิม (ใช้เปรียบเทียบว่า user แก้ไขหรือเปล่า)
+    void reqSave(const QString &userText, const QString &originalOcrText);
 
     // ร้องขอให้ Backend ยกเลิกและลบภาพที่แสกน
     void reqDiscard();
@@ -75,6 +75,8 @@ private:
     QPushButton *btnReviewDelete;  // ลบรูปปัจจุบัน
     QPushButton *btnReviewBack;    // กลับหน้า History (ซ่อนอยู่ในโหมดแสกน)
     QString      currentFileName;  // ชื่อไฟล์ที่กำลังจัดการอยู่
+    QString      lastOcrText;      // OCR result จาก AI — เปรียบเทียบว่า user แก้ไขหรือเปล่า
+    bool         cameraIsReady = false; // ติดตามสถานะกล้อง — ป้องกัน re-enable SCAN ผิดตอน review
 
     // ── หน้า 2: History (ประวัติการแสกน) ─────────
     QWidget     *pageHistory;

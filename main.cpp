@@ -26,8 +26,7 @@ int main(int argc, char *argv[]) {
     QObject::connect(&backend, &BackendController::cameraReady,
                      &window,  &MainWindow::setCameraReady);
 
-    // ผลลัพธ์ AI เสร็จ → เปิดหน้า Review
-    // [แก้ไข] ลบ reviewReady ออก เหลือ signal เดียวเพื่อป้องกัน showReviewMode ถูกเรียก 2 ครั้ง
+    // ผลลัพธ์ AI เสร็จ → เปิดหน้า Review พร้อม OCR text
     QObject::connect(&backend, &BackendController::resultReady,
                      &window,  &MainWindow::showReviewMode);
 
@@ -63,7 +62,7 @@ int main(int argc, char *argv[]) {
     QObject::connect(&window,  &MainWindow::reqExportToUsb,
                      &backend, &BackendController::exportToUsb);
 
-    window.show();
+    window.showFullScreen(); // showFullScreen() is already called in constructor — keep for clarity
     backend.start(); // เปิดกล้องและเริ่มระบบ
 
     return app.exec();

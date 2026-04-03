@@ -113,6 +113,22 @@ QPushButton#btnSave:hover   { background-color: #00E6AC; }
 QPushButton#btnSave:pressed { background-color: #009970; }
 
 /* ══════════════════════════════
+   ปุ่ม EXPORT — สีน้ำเงิน (outline)
+══════════════════════════════ */
+QPushButton#btnExport {
+    background-color: transparent;
+    color: #00D4FF;
+    border: 1px solid #00D4FF;
+    font-weight: 700;
+    min-height: 40px;
+}
+QPushButton#btnExport:hover {
+    background-color: #00D4FF;
+    color: #0F1117;
+}
+QPushButton#btnExport:pressed { background-color: #0099BB; }
+
+/* ══════════════════════════════
    ปุ่ม DELETE — สีแดง (outline)
 ══════════════════════════════ */
 QPushButton#btnDelete {
@@ -299,7 +315,7 @@ void MainWindow::setupUI() {
     btnGoHistory = new QPushButton("History");
 
     // ปุ่ม Shutdown — ปิดเครื่อง Raspberry Pi อย่างปลอดภัย
-    btnShutdown = new QPushButton("⏻  Shutdown");
+    btnShutdown = new QPushButton("Shutdown");
     btnShutdown->setObjectName("btnShutdown");
 
     sideLayout1->addWidget(btnScan);
@@ -439,7 +455,8 @@ void MainWindow::setupUI() {
     // โหมด History → ปุ่มนี้กลายเป็น EXPORT
     connect(btnSave, &QPushButton::clicked, this, [this]() {
         if (btnSave->text() == "SAVE") {
-            emit reqSave(txtUserInput->text());
+            // ส่งทั้ง user text และ OCR text เดิม — backend ใช้เปรียบเทียบว่าต้องวาด bbox ไหม
+            emit reqSave(txtUserInput->text(), lastOcrText);
             stackedWidget->setCurrentIndex(0);
         } else {
             emit reqExportToUsb(currentFileName);
@@ -460,9 +477,17 @@ void MainWindow::setupUI() {
         stackedWidget->setCurrentIndex(returnPage);
     });
 
-    // ปุ่ม BACK (Review) → กลับหน้า History (แสดงเฉพาะโหมดดูรูปเก่า)
+    // ปุ่ม BACK (Review — new scan mode) → discard temp frame แล้วกลับหน้า Capture
+    // ปุ่ม BACK (Review — history mode)  → กลับหน้า History เฉยๆ ไม่ discard
     connect(btnReviewBack, &QPushButton::clicked, this, [this]() {
-        stackedWidget->setCurrentIndex(2);
+        if (btnSave->text() == "SAVE") {
+            // new scan mode — discard uncommitted frame
+            emit reqDiscard();
+            stackedWidget->setCurrentIndex(0);
+        } else {
+            // history mode — just go back
+            stackedWidget->setCurrentIndex(2);
+        }
     });
 }
 
@@ -481,27 +506,33 @@ void MainWindow::updateLiveView(const QImage &image) {
 // เปิดหน้า Review — ใช้ได้ทั้งโหมดแสกนใหม่ และโหมดดูรูปเก่าจาก History
 // โหมดแสกนใหม่ : btnSave = "SAVE" (เขียว),  btnReviewBack ซ่อน
 // โหมด History  : btnSave = "EXPORT" (เทา),  btnReviewBack แสดง
-void MainWindow::showReviewMode(const QImage &image, const QString &fileName) {
+void MainWindow::showReviewMode(const QImage &image, const QString &fileName, const QString &ocrText) {
     currentFileName = fileName;
+    lastOcrText     = ocrText; // เก็บไว้เปรียบเทียบตอน SAVE
 
     previewLabel->setPixmap(
         QPixmap::fromImage(image).scaled(previewLabel->size(),
                                           Qt::KeepAspectRatio,
                                           Qt::SmoothTransformation));
 
-    txtUserInput->setText("Product_A");
+    // Pre-fill with OCR result — clear if nothing found so user must type manually
+    txtUserInput->setText(ocrText.trimmed());
+    txtUserInput->setPlaceholderText(ocrText.trimmed().isEmpty()
+                                     ? "No text detected — enter manually"
+                                     : "Enter serial number...");
     txtUserInput->setFocus();
-    txtUserInput->selectAll();
+    if (!ocrText.trimmed().isEmpty())
+        txtUserInput->selectAll();
 
     // ตั้งค่าสำหรับโหมดแสกนใหม่ — ปุ่มสีเขียว
     btnSave->setText("SAVE");
     btnSave->setObjectName("btnSave");
-    btnSave->style()->unpolish(btnSave); // บังคับ Qt refresh stylesheet
+    btnSave->style()->unpolish(btnSave);
     btnSave->style()->polish(btnSave);
 
-    // คืนสถานะปุ่ม SCAN (ถูก disable ตอนกด)
-    btnScan->setEnabled(true);
-    btnScan->setText("SCAN");
+    // คืนสถานะปุ่ม SCAN — เปิดได้เฉพาะตอนกล้องพร้อม
+    btnScan->setEnabled(cameraIsReady);
+    btnScan->setText(cameraIsReady ? "SCAN" : "No Camera");
 
     // แสดง Manual Label และ input (ซ่อนอยู่ในโหมด History)
     lblManual->show();
@@ -512,18 +543,19 @@ void MainWindow::showReviewMode(const QImage &image, const QString &fileName) {
 }
 
 void MainWindow::showMessage(const QString &msg) {
-    statusBar()->showMessage(msg, 3000);
+    // Anomaly warnings stay longer so user doesn't miss them
+    int ms = (msg.contains("Anomaly") || msg.contains("⚠")) ? 8000 : 3000;
+    statusBar()->showMessage(msg, ms);
 }
 
 // อัปเดตสถานะปุ่ม SCAN ตามการเชื่อมต่อกล้อง
 void MainWindow::setCameraReady(bool ready) {
+    cameraIsReady = ready;
     btnScan->setEnabled(ready);
     if (ready) {
-        // กล้องเจอแล้ว — คืนสถานะปกติ
         btnScan->setText("SCAN");
         statusBar()->clearMessage();
     } else {
-        // ยังไม่เจอกล้อง — แสดงข้อความแจ้งเตือน
         btnScan->setText("No Camera");
         statusBar()->showMessage("No camera detected — please connect a camera and wait", 0);
     }

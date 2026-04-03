@@ -65,3 +65,10 @@ MagOp_app
 MagOp_app_autogen/
 
 ai_output/
+
+tools/
+
+# AI Models
+*.onnx
+**/*.onnx
+

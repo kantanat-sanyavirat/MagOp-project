@@ -26,7 +26,7 @@ public slots:
     void capture();
 
     // วาดกรอบและ Label ลงบนภาพ แล้วบันทึกลง Disk (และส่งออก USB อัตโนมัติถ้ามี)
-    void save(const QString &userText);
+    void save(const QString &userText, const QString &originalOcrText);
 
     // ลบไฟล์ที่กำลังจัดการอยู่ (ถ้ามีอยู่จริง)
     void discard();
@@ -52,8 +52,7 @@ signals:
     void cameraReady(bool ready);
 
     // ผลลัพธ์ AI เสร็จแล้ว → เปิดหน้า Review
-    // [แก้ไข] รวม reviewReady เข้ามาที่นี่ signal เดียว ป้องกัน showReviewMode ถูกเรียก 2 ครั้ง
-    void resultReady(const QImage &image, const QString &fileName);
+    void resultReady(const QImage &image, const QString &fileName, const QString &ocrText);
 
     // รายชื่อไฟล์ล่าสุด → อัปเดต History List
     void fileListUpdated(const QStringList &files);
@@ -77,7 +76,10 @@ private:
     cv::Mat currentLiveFrame;  // Frame สดล่าสุดจากกล้อง
     cv::Mat lastCapturedFrame; // Frame ที่กด Capture ไว้ (ใช้ตอน Save)
     QString currentFileName;   // ชื่อไฟล์ที่กำลังจัดการอยู่
-    bool    cameraConnected = false; // ติดตามสถานะกล้อง — ป้องกัน emit ซ้ำ
+    bool    cameraConnected = false;
+
+    // Detection list จาก AI — ใช้ใน save() เพื่อตัดสินใจว่าจะวาด bbox ไหม
+    std::vector<Detection> currentDetections;
 
     // ── ข้อมูลจาก AI ─────────────────────────────────────────
     QString currentAiLabel;        // Label ที่ AI ตรวจจับได้

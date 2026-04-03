@@ -5,6 +5,7 @@
 #include <QProcess>
 #include <QPainter>
 #include <QDebug>
+#include <cstdio>
 
 // ─────────────────────────────────────────────────────────────
 // Constructor / Destructor
@@ -70,22 +71,63 @@ void BackendController::processCameraFrame(const cv::Mat &frame) {
 
 // รับผลลัพธ์จาก AI → วาดกรอบ → ส่งไปหน้า Review
 void BackendController::handleAiResult(const FrameResult &result) {
-    // ดึงข้อมูล Detection ตัวแรก (ถ้าไม่มีให้ใช้ค่า default)
-    currentAiLabel = result.detections.empty() ? "Unknown"                       : result.detections[0].label;
-    currentX       = result.detections.empty() ? 50                              : result.detections[0].boundingBox.x;
-    currentY       = result.detections.empty() ? 50                              : result.detections[0].boundingBox.y;
+    currentDetections = result.detections;
+    currentAiLabel    = result.detections.empty() ? "" : result.detections[0].label;
+    currentX          = result.detections.empty() ? 0  : result.detections[0].boundingBox.x;
+    currentY          = result.detections.empty() ? 0  : result.detections[0].boundingBox.y;
 
-    // วาด Bounding Box บนภาพต้นฉบับ
+    float score         = result.anomalyScore;
+    bool  isAnomaly     = score > 0.5f;
+    bool  hasDetections = !result.detections.empty();
+
     cv::Mat previewMat = result.originalImage.clone();
+
+    // ① Draw bounding boxes only — no label text
+    for (const auto& det : result.detections) {
+        cv::rectangle(previewMat, det.boundingBox, cv::Scalar(0, 255, 0), 3);
+    }
+
+    // ② Draw anomaly score on image (top-right) — always visible
+    std::string anomalyStr;
+    char buf[32];
+    std::snprintf(buf, sizeof(buf), "%.2f", score);
+    anomalyStr = isAnomaly ? std::string("Defect detected") : std::string("No defect");
+    cv::Scalar anomalyColor = isAnomaly ? cv::Scalar(0, 0, 255) : cv::Scalar(0, 200, 0);
+
+    // Background rect for readability
+    int baseline = 0;
+    cv::Size textSz = cv::getTextSize(anomalyStr, cv::FONT_HERSHEY_SIMPLEX, 0.7, 2, &baseline);
+    int tx = previewMat.cols - textSz.width - 10;
+    int ty = 30;
     cv::rectangle(previewMat,
-                  cv::Rect(currentX, currentY, 250, 200),
-                  cv::Scalar(0, 255, 0), 3);
+                  cv::Point(tx - 4, ty - textSz.height - 4),
+                  cv::Point(tx + textSz.width + 4, ty + 4),
+                  cv::Scalar(0, 0, 0), cv::FILLED);
+    cv::putText(previewMat, anomalyStr,
+                cv::Point(tx, ty),
+                cv::FONT_HERSHEY_SIMPLEX, 0.7, anomalyColor, 2);
 
-    // ตั้งชื่อไฟล์ตาม Timestamp ป้องกันชื่อซ้ำ
+    // ③ OCR text on image bottom
+    if (!result.ocrText.isEmpty()) {
+        cv::putText(previewMat,
+                    "OCR: " + result.ocrText.toStdString(),
+                    cv::Point(10, previewMat.rows - 20),
+                    cv::FONT_HERSHEY_SIMPLEX, 0.7, cv::Scalar(255, 200, 0), 2);
+    }
+
+    // ④ Status bar message
+    if (!hasDetections && isAnomaly) {
+        emit statusMessage("⚠ Anomaly detected but no serial number found — enter manually");
+    } else if (!hasDetections) {
+        emit statusMessage("No serial number detected — enter manually if needed");
+    } else {
+        emit statusMessage(isAnomaly
+            ? QString("⚠ Anomaly score: %1").arg(score, 0, 'f', 2)
+            : QString("✓ Normal  score: %1").arg(score, 0, 'f', 2));
+    }
+
     currentFileName = "SCAN_" + QDateTime::currentDateTime().toString("yyyyMMdd_HHmmss") + ".jpg";
-
-    // [แก้ไข] emit เพียง signal เดียว (ลบ reviewReady ออกแล้ว)
-    emit resultReady(matToQImage(previewMat), currentFileName);
+    emit resultReady(matToQImage(previewMat), currentFileName, result.ocrText);
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -99,44 +141,43 @@ void BackendController::capture() {
     }
 
     emit statusMessage("Processing AI...");
-    lastCapturedFrame = currentLiveFrame.clone(); // เก็บ Frame นิ่งไว้ใช้ตอน Save
+    lastCapturedFrame = currentLiveFrame.clone();
 
-    // ── Mockup AI Result ─────────────────────────────────────
-    // TODO: แทนที่ block นี้ด้วย aiProcessor->process(lastCapturedFrame) เมื่อพร้อม
-    FrameResult mock;
-    mock.originalImage = lastCapturedFrame;
-    mock.timestamp     = QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss");
-
-    Detection d;
-    d.label       = "Product_A";
-    d.boundingBox = cv::Rect(100, 100, 250, 200);
-    mock.detections.push_back(d);
-
-    handleAiResult(mock);
-    // ─────────────────────────────────────────────────────────
+    // Clear any pending frames in queue before adding new one
+    // Prevents stale results if user taps SCAN rapidly
+    aiProcessor->clearQueue();
+    aiProcessor->addFrameToQueue(lastCapturedFrame);
 }
 
-void BackendController::save(const QString &userText) {
+void BackendController::save(const QString &userText, const QString &originalOcrText) {
     if (lastCapturedFrame.empty()) {
         emit statusMessage("No image to save");
         return;
     }
 
-    // ① วาด Bounding Box บนภาพต้นฉบับ
     cv::Mat saveMat = lastCapturedFrame.clone();
-    cv::rectangle(saveMat,
-                  cv::Rect(currentX, currentY, 250, 200),
-                  cv::Scalar(0, 255, 0), 3);
 
-    // ② วาด Label ด้วย QPainter (รองรับภาษาไทย ต่างจาก cv::putText)
+    // Draw bbox only if AI found detections AND user did NOT edit the text
+    bool userEdited   = userText.trimmed() != originalOcrText.trimmed();
+    bool hasDetection = !currentDetections.empty();
+
+    if (hasDetection && !userEdited) {
+        for (const auto& det : currentDetections)
+            cv::rectangle(saveMat, det.boundingBox, cv::Scalar(0, 255, 0), 2);
+    }
+
+    // Put user's text at bottom-left (QPainter supports Thai)
     QImage img = matToQImage(saveMat);
     QPainter painter(&img);
-    painter.setFont(QFont("Sans", 30, QFont::Bold));
-    painter.setPen(Qt::green);
-    painter.drawText(currentX, currentY - 10, userText);
+    painter.setFont(QFont("Sans", 22, QFont::Bold));
+    int tx = 12, ty = img.height() - 16;
+    painter.setPen(Qt::black);
+    painter.drawText(tx + 2, ty + 2, userText);  // shadow
+    painter.setPen(Qt::yellow);
+    painter.drawText(tx, ty, userText);
     painter.end();
 
-    // ③ บันทึกลง Disk
+    // Save to disk
     if (img.save(SAVE_PATH + "/" + currentFileName, "JPG")) {
         // บันทึก label ลงไฟล์ .txt คู่กัน
         QString labelFileName = currentFileName;
@@ -156,23 +197,23 @@ void BackendController::save(const QString &userText) {
 }
 
 void BackendController::discard() {
-    if (currentFileName.isEmpty()) return;
-
-    // [แก้ไข] เช็คว่าไฟล์มีอยู่จริงก่อนลบ ป้องกัน error กรณีกด DELETE ก่อน SAVE
-    const QString fullPath = SAVE_PATH + "/" + currentFileName;
-    if (QFile::exists(fullPath)) {
-        QFile::remove(fullPath);
-
-        // ลบไฟล์ .txt label คู่กันด้วย
-        QString labelPath = fullPath;
-        labelPath.replace(".jpg", ".txt", Qt::CaseInsensitive);
-        QFile::remove(labelPath);
-
-        emit statusMessage("Deleted: " + currentFileName);
-        refreshFileList();
-    } else {
-        emit statusMessage("Cancelled");
+    // Delete files from disk only if they were already saved
+    if (!currentFileName.isEmpty()) {
+        const QString fullPath = SAVE_PATH + "/" + currentFileName;
+        if (QFile::exists(fullPath)) {
+            QFile::remove(fullPath);
+            QString labelPath = fullPath;
+            labelPath.replace(".jpg", ".txt", Qt::CaseInsensitive);
+            QFile::remove(labelPath);
+            emit statusMessage("Deleted: " + currentFileName);
+            refreshFileList();
+        }
     }
+
+    // Always clear in-memory state so next SCAN starts fresh
+    lastCapturedFrame.release();
+    currentDetections.clear();
+    currentFileName.clear();
 }
 
 void BackendController::exportToUsb(const QString &fileName) {
