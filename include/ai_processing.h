@@ -9,14 +9,29 @@
 #include <vector>
 #include <deque>
 #include <string>
+#include <filesystem>
 
 // ─────────────────────────────────────────────────────────────
 // Model paths — relative to working directory (MagOp-project/)
 // ─────────────────────────────────────────────────────────────
 
-const std::string YOLO_MODEL_PATH    = "models/yolo/yolo.onnx";
-const std::string ANOMALY_MODEL_PATH = "models/anomaly/anomalib_efficientad.onnx";
-const std::string OCR_REC_PATH       = "models/ocr/TH_OCR_FROM_PADDLE.onnx";
+// ─────────────────────────────────────────────────────────────
+// Helper — find first .onnx file in a directory
+// ─────────────────────────────────────────────────────────────
+static std::string findOnnx(const std::string& dir) {
+    for (const auto& entry : std::filesystem::directory_iterator(dir)) {
+        if (entry.path().extension() == ".onnx")
+            return entry.path().string();
+    }
+    return "";
+}
+
+// ─────────────────────────────────────────────────────────────
+// Model directories — just drop any .onnx file in here
+// ─────────────────────────────────────────────────────────────
+const std::string YOLO_MODEL_PATH    = findOnnx("models/yolo");
+const std::string ANOMALY_MODEL_PATH = findOnnx("models/anomaly");
+const std::string OCR_REC_PATH       = findOnnx("models/ocr");
 
 // ─────────────────────────────────────────────────────────────
 // Inference config

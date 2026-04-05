@@ -70,5 +70,4 @@ tools/
 
 # AI Models
 *.onnx
-**/*.onnx
 
