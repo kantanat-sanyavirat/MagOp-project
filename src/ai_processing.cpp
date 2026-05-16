@@ -2,6 +2,41 @@
 #include <QDateTime>
 #include <QDebug>
 #include <algorithm>
+#include <cmath>
+#include <cstring>
+#include <map>
+
+// ─────────────────────────────────────────────────────────────
+// Charset helpers
+// ─────────────────────────────────────────────────────────────
+
+std::vector<std::string> AI_Processing::loadCharset(const std::string& dictPath) {
+    std::vector<std::string> result;
+    std::ifstream f(dictPath);
+    if (!f.is_open()) {
+        qWarning() << "[AI] Cannot open dict:" << QString::fromStdString(dictPath);
+        return result;
+    }
+    std::string line;
+    while (std::getline(f, line))
+        result.push_back(line.empty() ? " " : line);
+    qDebug() << "[AI] Charset loaded:" << result.size() << "chars";
+    return result;
+}
+
+// Split UTF-8 string into list of characters
+static std::vector<std::string> splitUtf8(const std::string& s) {
+    std::vector<std::string> chars;
+    size_t i = 0;
+    while (i < s.size()) {
+        unsigned char c = s[i];
+        int len = (c & 0x80) == 0 ? 1 : (c & 0xE0) == 0xC0 ? 2 :
+                  (c & 0xF0) == 0xE0 ? 3 : 4;
+        chars.push_back(s.substr(i, len));
+        i += len;
+    }
+    return chars;
+}
 
 // ─────────────────────────────────────────────────────────────
 // Constructor / Destructor
@@ -10,24 +45,61 @@
 AI_Processing::AI_Processing(QObject *parent) : QObject(parent) {
     qRegisterMetaType<FrameResult>("FrameResult");
 
-    ortEnv  = new Ort::Env(ORT_LOGGING_LEVEL_WARNING, "MagOp");
+    // ── Hailo VDevice (Anomaly only) ──────────────────────────
+    auto vdevice_exp = hailort::VDevice::create();
+    if (!vdevice_exp) {
+        qCritical() << "[AI] Hailo VDevice failed:" << vdevice_exp.status();
+    } else {
+        vdevice = vdevice_exp.release();
+
+        if (!ANOMALY_HEF_PATH.empty()) {
+            auto m = vdevice->create_infer_model(ANOMALY_HEF_PATH);
+            if (!m) { qCritical() << "[AI] Anomaly hef failed:" << m.status(); }
+            else {
+                anomalyInferModel = m.release();
+                anomalyInferModel->set_batch_size(1);
+                anomalyInferModel->input()->set_format_type(HAILO_FORMAT_TYPE_UINT8);
+                auto c = anomalyInferModel->configure();
+                if (!c) { qCritical() << "[AI] Anomaly configure failed:" << c.status(); }
+                else {
+                    anomalyConfigured = std::move(c.release());
+                    qDebug() << "[AI] Anomaly ready:" << QString::fromStdString(ANOMALY_HEF_PATH);
+                }
+            }
+        }
+    }
+
+    // ── ONNX Runtime (YOLO + OCR CPU) ────────────────────────
+    ortEnv  = new Ort::Env(ORT_LOGGING_LEVEL_ERROR, "MagOp");
     memInfo = new Ort::MemoryInfo(
         Ort::MemoryInfo::CreateCpu(OrtArenaAllocator, OrtMemTypeDefault));
 
-    // Session options — tuned for Raspberry Pi 5 (4 cores)
     Ort::SessionOptions opts;
     opts.SetIntraOpNumThreads(4);
-    opts.SetInterOpNumThreads(1);
     opts.SetGraphOptimizationLevel(GraphOptimizationLevel::ORT_ENABLE_ALL);
 
-    try {
-        yoloSession    = std::make_unique<Ort::Session>(*ortEnv, YOLO_MODEL_PATH.c_str(), opts);
-        anomalySession = std::make_unique<Ort::Session>(*ortEnv, ANOMALY_MODEL_PATH.c_str(), opts);
-        ocrRecSession  = std::make_unique<Ort::Session>(*ortEnv, OCR_REC_PATH.c_str(), opts);
-        qDebug() << "[AI] All models loaded successfully";
-    } catch (const Ort::Exception& e) {
-        qCritical() << "[AI] Failed to load model:" << e.what();
+    if (!YOLO_ONNX_PATH.empty()) {
+        try {
+            yoloSession = std::make_unique<Ort::Session>(*ortEnv, YOLO_ONNX_PATH.c_str(), opts);
+            qDebug() << "[AI] YOLO ready (ONNX CPU):" << QString::fromStdString(YOLO_ONNX_PATH);
+        } catch (const Ort::Exception& e) {
+            qCritical() << "[AI] YOLO failed:" << e.what();
+        }
     }
+
+    if (!OCR_REC_ONNX_PATH.empty()) {
+        try {
+            ocrRecSession = std::make_unique<Ort::Session>(*ortEnv, OCR_REC_ONNX_PATH.c_str(), opts);
+            qDebug() << "[AI] OCR ready (ONNX CPU):" << QString::fromStdString(OCR_REC_ONNX_PATH);
+        } catch (const Ort::Exception& e) {
+            qCritical() << "[AI] OCR failed:" << e.what();
+        }
+    }
+
+    // ── Load Thai charset ─────────────────────────────────────
+    chars = loadCharset(OCR_DICT_PATH);
+    if (chars.empty())
+        qWarning() << "[AI] Charset empty — OCR will return blank";
 }
 
 AI_Processing::~AI_Processing() {
@@ -70,16 +142,10 @@ void AI_Processing::processNextFrame() {
 
     try {
         result.detections   = runYOLO(frame);
-        result.anomalyScore = runAnomaly(frame); // always run — works on full image
-
-        if (result.detections.empty()) {
-            // YOLO found nothing — skip OCR only
-            qDebug() << "[AI] No detections — skipping OCR";
-            result.ocrText = "";
-        } else {
+        result.anomalyScore = runAnomaly(frame);
+        if (!result.detections.empty())
             result.ocrText = runOCR(frame, result.detections);
-        }
-    } catch (const Ort::Exception& e) {
+    } catch (const std::exception& e) {
         qWarning() << "[AI] Inference error:" << e.what();
     }
 
@@ -88,21 +154,23 @@ void AI_Processing::processNextFrame() {
 }
 
 // ─────────────────────────────────────────────────────────────
-// Preprocessing
+// Helpers
 // ─────────────────────────────────────────────────────────────
 
-std::vector<float> AI_Processing::preprocessSquare(const cv::Mat& bgr, int size) {
-    cv::Mat rgb;
-    cv::cvtColor(bgr, rgb, cv::COLOR_BGR2RGB);
-    cv::resize(rgb, rgb, cv::Size(size, size));
-    rgb.convertTo(rgb, CV_32F, 1.0 / 255.0);
-
-    std::vector<float> tensor(3 * size * size);
-    for (int c = 0; c < 3; ++c)
-        for (int h = 0; h < size; ++h)
-            for (int w = 0; w < size; ++w)
-                tensor[c * size * size + h * size + w] = rgb.at<cv::Vec3f>(h, w)[c];
-    return tensor;
+cv::Rect AI_Processing::mergeBoxes(const std::vector<Detection>& dets,
+                                    const cv::Mat& image, int pad)
+{
+    int x1 = INT_MAX, y1 = INT_MAX, x2 = 0, y2 = 0;
+    for (const auto& d : dets) {
+        x1 = std::min(x1, d.boundingBox.x);
+        y1 = std::min(y1, d.boundingBox.y);
+        x2 = std::max(x2, d.boundingBox.x + d.boundingBox.width);
+        y2 = std::max(y2, d.boundingBox.y + d.boundingBox.height);
+    }
+    return cv::Rect(
+        std::max(0, x1 - pad), std::max(0, y1 - pad),
+        std::min(image.cols, x2 + pad) - std::max(0, x1 - pad),
+        std::min(image.rows, y2 + pad) - std::max(0, y1 - pad));
 }
 
 std::pair<std::vector<float>, int>
@@ -115,65 +183,73 @@ AI_Processing::preprocessRec(const cv::Mat& crop) {
 
     std::vector<float> tensor(3 * OCR_REC_H * rec_w);
     for (int c = 0; c < 3; ++c)
-        for (int h = 0; h < OCR_REC_H; ++h)
-            for (int w = 0; w < rec_w; ++w)
-                tensor[c * OCR_REC_H * rec_w + h * rec_w + w] = rgb.at<cv::Vec3f>(h, w)[c];
+        for (int y = 0; y < OCR_REC_H; ++y)
+            for (int x = 0; x < rec_w; ++x)
+                tensor[c * OCR_REC_H * rec_w + y * rec_w + x] = rgb.at<cv::Vec3f>(y, x)[c];
     return {tensor, rec_w};
 }
 
 std::string AI_Processing::decodeCTC(const float* data, int steps, int vocabSize) {
-    std::string result;
-    int prev = -1;
+    std::string result; int prev = -1;
     for (int t = 0; t < steps; ++t) {
-        int   best = 0;
-        float best_val = data[t * vocabSize];
+        int best = 0; float bv = data[t * vocabSize];
         for (int v = 1; v < vocabSize; ++v)
-            if (data[t * vocabSize + v] > best_val) { best_val = data[t * vocabSize + v]; best = v; }
-        int blank = vocabSize - 1;
-        if (best != blank && best != prev && best < (int)CHARSET.size())
-            result += CHARSET[best];
+            if (data[t * vocabSize + v] > bv) { bv = data[t * vocabSize + v]; best = v; }
+        // PP-OCRv5: blank = index 0, chars start at index 1
+        if (best != 0 && best != prev && (best - 1) < (int)chars.size())
+            result += chars[best - 1];
         prev = best;
     }
     return result;
 }
 
 // ─────────────────────────────────────────────────────────────
-// 1. YOLOv8
+// 1. YOLO via ONNX CPU
 // ─────────────────────────────────────────────────────────────
 
 std::vector<Detection> AI_Processing::runYOLO(const cv::Mat& frame) {
-    float scale_x = float(frame.cols) / YOLO_INPUT_W;
-    float scale_y = float(frame.rows) / YOLO_INPUT_H;
+    if (!yoloSession) return {};
 
-    auto input_data = preprocessSquare(frame, YOLO_INPUT_W);
-    std::array<int64_t, 4> shape = {1, 3, YOLO_INPUT_H, YOLO_INPUT_W};
+    float scale_x = float(frame.cols) / YOLO_INPUT_SIZE;
+    float scale_y = float(frame.rows) / YOLO_INPUT_SIZE;
+
+    cv::Mat rgb;
+    cv::cvtColor(frame, rgb, cv::COLOR_BGR2RGB);
+    cv::resize(rgb, rgb, cv::Size(YOLO_INPUT_SIZE, YOLO_INPUT_SIZE));
+    rgb.convertTo(rgb, CV_32F, 1.0 / 255.0);
+
+    std::vector<float> input(3 * YOLO_INPUT_SIZE * YOLO_INPUT_SIZE);
+    for (int c = 0; c < 3; ++c)
+        for (int y = 0; y < YOLO_INPUT_SIZE; ++y)
+            for (int x = 0; x < YOLO_INPUT_SIZE; ++x)
+                input[c * YOLO_INPUT_SIZE * YOLO_INPUT_SIZE + y * YOLO_INPUT_SIZE + x] =
+                    rgb.at<cv::Vec3f>(y, x)[c];
+
+    std::array<int64_t, 4> shape = {1, 3, YOLO_INPUT_SIZE, YOLO_INPUT_SIZE};
     auto tensor = Ort::Value::CreateTensor<float>(
-        *memInfo, input_data.data(), input_data.size(),
-        shape.data(), shape.size());
+        *memInfo, input.data(), input.size(), shape.data(), shape.size());
 
     Ort::AllocatorWithDefaultOptions alloc;
     auto in_name  = yoloSession->GetInputNameAllocated(0, alloc);
     auto out_name = yoloSession->GetOutputNameAllocated(0, alloc);
-    const char* in[]  = {in_name.get()};
-    const char* out[] = {out_name.get()};
+    const char* ins[]  = {in_name.get()};
+    const char* outs[] = {out_name.get()};
 
-    auto outputs = yoloSession->Run(Ort::RunOptions{nullptr}, in, &tensor, 1, out, 1);
-
-    auto   out_shape   = outputs[0].GetTensorTypeAndShapeInfo().GetShape();
-    int    num_ch      = static_cast<int>(out_shape[1]);
-    int    num_boxes   = static_cast<int>(out_shape[2]);
-    int    num_classes = num_ch - 4;
-    const float* raw   = outputs[0].GetTensorData<float>();
+    auto outputs   = yoloSession->Run(Ort::RunOptions{nullptr}, ins, &tensor, 1, outs, 1);
+    auto out_shape = outputs[0].GetTensorTypeAndShapeInfo().GetShape();
+    int num_ch    = static_cast<int>(out_shape[1]);
+    int num_boxes = static_cast<int>(out_shape[2]);
+    int num_cls   = num_ch - 4;
+    const float* raw = outputs[0].GetTensorData<float>();
 
     std::vector<cv::Rect> boxes;
     std::vector<float>    scores;
-    std::vector<int>      class_ids;
 
     for (int i = 0; i < num_boxes; ++i) {
-        float max_score = 0.0f; int best_cls = 0;
-        for (int c = 0; c < num_classes; ++c) {
+        float max_score = 0.0f;
+        for (int c = 0; c < num_cls; ++c) {
             float s = raw[(4 + c) * num_boxes + i];
-            if (s > max_score) { max_score = s; best_cls = c; }
+            if (s > max_score) max_score = s;
         }
         if (max_score < YOLO_CONF_THRESHOLD) continue;
 
@@ -186,10 +262,8 @@ std::vector<Detection> AI_Processing::runYOLO(const cv::Mat& frame) {
         int w  = std::min(int(bw), frame.cols - x1);
         int h  = std::min(int(bh), frame.rows - y1);
         if (w <= 0 || h <= 0) continue;
-
         boxes.push_back(cv::Rect(x1, y1, w, h));
         scores.push_back(max_score);
-        class_ids.push_back(best_cls);
     }
 
     std::vector<int> indices;
@@ -210,92 +284,98 @@ std::vector<Detection> AI_Processing::runYOLO(const cv::Mat& frame) {
 }
 
 // ─────────────────────────────────────────────────────────────
-// 2. Anomaly
+// 2. Anomaly via Hailo NPU
 // ─────────────────────────────────────────────────────────────
 
 float AI_Processing::runAnomaly(const cv::Mat& frame) {
+    if (!anomalyConfigured) return 0.0f;
+
+    int iw = anomalyInferModel->input()->shape().width;
+    int ih = anomalyInferModel->input()->shape().height;
+
     cv::Mat rgb;
     cv::cvtColor(frame, rgb, cv::COLOR_BGR2RGB);
-    cv::resize(rgb, rgb, cv::Size(ANOMALY_INPUT_SIZE, ANOMALY_INPUT_SIZE));
-    rgb.convertTo(rgb, CV_32F, 1.0 / 255.0);
+    cv::resize(rgb, rgb, cv::Size(iw, ih));
 
-    constexpr float mean[3] = {0.485f, 0.456f, 0.406f};
-    constexpr float std_[3] = {0.229f, 0.224f, 0.225f};
+    auto bindings_exp = anomalyConfigured->create_bindings();
+    if (!bindings_exp) return 0.0f;
+    auto bindings = bindings_exp.release();
 
-    std::vector<float> tensor(3 * ANOMALY_INPUT_SIZE * ANOMALY_INPUT_SIZE);
-    for (int c = 0; c < 3; ++c)
-        for (int h = 0; h < ANOMALY_INPUT_SIZE; ++h)
-            for (int w = 0; w < ANOMALY_INPUT_SIZE; ++w)
-                tensor[c * ANOMALY_INPUT_SIZE * ANOMALY_INPUT_SIZE + h * ANOMALY_INPUT_SIZE + w]
-                    = (rgb.at<cv::Vec3f>(h, w)[c] - mean[c]) / std_[c];
+    // Aligned input buffer
+    size_t in_size = rgb.total() * rgb.elemSize();
+    void* in_ptr = nullptr;
+    posix_memalign(&in_ptr, 16384, in_size);
+    memcpy(in_ptr, rgb.data, in_size);
+    bindings.input()->set_buffer(hailort::MemoryView(in_ptr, in_size));
 
-    std::array<int64_t, 4> shape = {1, 3, ANOMALY_INPUT_SIZE, ANOMALY_INPUT_SIZE};
-    auto input_tensor = Ort::Value::CreateTensor<float>(
-        *memInfo, tensor.data(), tensor.size(), shape.data(), shape.size());
+    const std::string OUT_NAME = "model_fixed/normalization4";
+    float qp_scale = 1.0f; int qp_zp = 0; size_t frame_size = 0;
+    for (auto& out : anomalyInferModel->outputs()) {
+        if (out.name() == OUT_NAME) {
+            frame_size = out.get_frame_size();
+            auto infos = out.get_quant_infos();
+            if (!infos.empty()) { qp_scale = infos[0].qp_scale; qp_zp = infos[0].qp_zp; }
+            break;
+        }
+    }
 
-    Ort::AllocatorWithDefaultOptions alloc;
-    auto in_name  = anomalySession->GetInputNameAllocated(0, alloc);
-    auto out_name = anomalySession->GetOutputNameAllocated(0, alloc);
-    const char* in[]  = {in_name.get()};
-    const char* out[] = {out_name.get()};
+    void* out_ptr = nullptr;
+    posix_memalign(&out_ptr, 16384, frame_size);
+    memset(out_ptr, 0, frame_size);
+    bindings.output(OUT_NAME)->set_buffer(hailort::MemoryView(out_ptr, frame_size));
 
-    auto outputs = anomalySession->Run(Ort::RunOptions{nullptr}, in, &input_tensor, 1, out, 1);
+    auto status = anomalyConfigured->run(bindings, std::chrono::milliseconds(5000));
+    free(in_ptr);
 
-    auto   out_shape = outputs[0].GetTensorTypeAndShapeInfo().GetShape();
-    size_t count = 1;
-    for (auto d : out_shape) count *= static_cast<size_t>(d);
-    const float* data = outputs[0].GetTensorData<float>();
-    float score = std::max(0.0f, std::min(1.0f, *std::max_element(data, data + count)));
+    float score = 0.0f;
+    if (status == HAILO_SUCCESS) {
+        auto* buf = static_cast<uint8_t*>(out_ptr);
+        float max_val = 0.0f;
+        for (size_t i = 0; i < frame_size; ++i) {
+            float dq = (buf[i] - qp_zp) * qp_scale;
+            if (dq > max_val) max_val = dq;
+        }
+        score = 1.0f / (1.0f + std::exp(-max_val));
+        score = std::max(0.0f, std::min(1.0f, score));
+    } else {
+        qWarning() << "[AI] Anomaly run failed:" << status;
+    }
+    free(out_ptr);
 
-    qDebug() << "[AI] Anomaly score:" << score
-             << (score > anomalyThreshold ? "→ ANOMALY" : "→ NORMAL");
+    qDebug() << "[AI] Anomaly:" << score;
     return score;
 }
 
 // ─────────────────────────────────────────────────────────────
-// 3. PP-OCRv5 Recognition (uses YOLO bbox)
+// 3. OCR via ONNX CPU — merged bbox + Thai charset
 // ─────────────────────────────────────────────────────────────
 
 QString AI_Processing::runOCR(const cv::Mat& frame,
                                const std::vector<Detection>& dets) {
-    if (dets.empty()) return "";
+    if (!ocrRecSession || dets.empty() || chars.empty()) return "";
+
+    cv::Rect merged = mergeBoxes(dets, frame, 20);
+    if (merged.area() < 100) return "";
+
+    cv::Mat crop = frame(merged);
+    auto [rec_data, rec_w] = preprocessRec(crop);
 
     Ort::AllocatorWithDefaultOptions alloc;
-    QStringList texts;
+    std::array<int64_t, 4> shape = {1, 3, OCR_REC_H, rec_w};
+    auto tensor = Ort::Value::CreateTensor<float>(
+        *memInfo, rec_data.data(), rec_data.size(),
+        shape.data(), shape.size());
 
-    for (const auto& det : dets) {
-        cv::Rect roi = det.boundingBox & cv::Rect(0, 0, frame.cols, frame.rows);
-        if (roi.area() < 64) continue;
+    auto in  = ocrRecSession->GetInputNameAllocated(0, alloc);
+    auto out = ocrRecSession->GetOutputNameAllocated(0, alloc);
+    const char* ins[]  = {in.get()};
+    const char* outs[] = {out.get()};
 
-        cv::Mat crop = frame(roi);
-        auto [rec_data, rec_w] = preprocessRec(crop);
+    auto outputs = ocrRecSession->Run(Ort::RunOptions{nullptr}, ins, &tensor, 1, outs, 1);
+    auto oshape  = outputs[0].GetTensorTypeAndShapeInfo().GetShape();
+    std::string text = decodeCTC(outputs[0].GetTensorData<float>(),
+                                  oshape[1], oshape[2]);
 
-        std::array<int64_t, 4> rec_shape = {1, 3, OCR_REC_H, rec_w};
-        auto rec_tensor = Ort::Value::CreateTensor<float>(
-            *memInfo, rec_data.data(), rec_data.size(),
-            rec_shape.data(), rec_shape.size());
-
-        auto in_name  = ocrRecSession->GetInputNameAllocated(0, alloc);
-        auto out_name = ocrRecSession->GetOutputNameAllocated(0, alloc);
-        const char* in[]  = {in_name.get()};
-        const char* out[] = {out_name.get()};
-
-        auto rec_outputs = ocrRecSession->Run(
-            Ort::RunOptions{nullptr}, in, &rec_tensor, 1, out, 1);
-
-        auto shape     = rec_outputs[0].GetTensorTypeAndShapeInfo().GetShape();
-        int  steps     = static_cast<int>(shape[1]);
-        int  vocab_sz  = static_cast<int>(shape[2]);
-        const float* out_data = rec_outputs[0].GetTensorData<float>();
-
-        std::string text = decodeCTC(out_data, steps, vocab_sz);
-        if (!text.empty()) {
-            texts << QString::fromStdString(text);
-            qDebug() << "[AI] OCR region:" << QString::fromStdString(text);
-        }
-    }
-
-    QString result = texts.join(" ");
-    qDebug() << "[AI] OCR result:" << result;
-    return result;
+    qDebug() << "[AI] OCR:" << QString::fromStdString(text);
+    return QString::fromStdString(text);
 }

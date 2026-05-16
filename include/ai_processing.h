@@ -6,50 +6,45 @@
 #include <QMutex>
 #include <opencv2/opencv.hpp>
 #include <onnxruntime_cxx_api.h>
+#include <hailo/hailort.hpp>
 #include <vector>
 #include <deque>
 #include <string>
 #include <filesystem>
+#include <memory>
+#include <optional>
+#include <fstream>
 
 // ─────────────────────────────────────────────────────────────
-// Model paths — relative to working directory (MagOp-project/)
+// Auto-detect model files
 // ─────────────────────────────────────────────────────────────
 
-// ─────────────────────────────────────────────────────────────
-// Helper — find first .onnx file in a directory
-// ─────────────────────────────────────────────────────────────
-static std::string findOnnx(const std::string& dir) {
-    for (const auto& entry : std::filesystem::directory_iterator(dir)) {
-        if (entry.path().extension() == ".onnx")
-            return entry.path().string();
-    }
+static inline std::string findModel(const std::string& dir, const std::string& ext) {
+    if (!std::filesystem::exists(dir)) return "";
+    for (const auto& e : std::filesystem::directory_iterator(dir))
+        if (e.path().extension() == ext) return e.path().string();
     return "";
 }
 
-// ─────────────────────────────────────────────────────────────
-// Model directories — just drop any .onnx file in here
-// ─────────────────────────────────────────────────────────────
-const std::string YOLO_MODEL_PATH    = findOnnx("models/yolo");
-const std::string ANOMALY_MODEL_PATH = findOnnx("models/anomaly");
-const std::string OCR_REC_PATH       = findOnnx("models/ocr");
+// YOLO    → .onnx (CPU)   — swap to .hef when ready
+// Anomaly → .hef  (Hailo NPU)
+// OCR     → .onnx (CPU)
+const std::string YOLO_ONNX_PATH     = findModel("models/yolo",    ".onnx");
+const std::string ANOMALY_HEF_PATH   = findModel("models/anomaly", ".hef");
+const std::string OCR_REC_ONNX_PATH  = findModel("models/ocr",     ".onnx");
+const std::string OCR_DICT_PATH      = findModel("models/ocr",     ".txt");
+
+const std::string THAI_FONT_PATH = "/usr/share/fonts/truetype/tlwg/Garuda.ttf";
 
 // ─────────────────────────────────────────────────────────────
 // Inference config
 // ─────────────────────────────────────────────────────────────
 
-constexpr float YOLO_CONF_THRESHOLD = 0.5f;
+constexpr float YOLO_CONF_THRESHOLD = 0.3f;
 constexpr float YOLO_NMS_THRESHOLD  = 0.45f;
 constexpr float ANOMALY_THRESHOLD   = 0.5f;
-constexpr int   YOLO_INPUT_W        = 640;
-constexpr int   YOLO_INPUT_H        = 640;
-constexpr int   ANOMALY_INPUT_SIZE  = 256;
+constexpr int   YOLO_INPUT_SIZE     = 640;
 constexpr int   OCR_REC_H           = 48;
-
-// PP-OCRv5 charset — must match training charset
-const std::string CHARSET =
-    " !\"#$%&'()*+,-./0123456789:;<=>?@"
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`"
-    "abcdefghijklmnopqrstuvwxyz{|}~";
 
 // ─────────────────────────────────────────────────────────────
 // Data Structures
@@ -64,9 +59,9 @@ struct Detection {
 
 struct FrameResult {
     cv::Mat                originalImage;
-    std::vector<Detection> detections;   // YOLOv8 output
-    float                  anomalyScore = 0.0f; // Anomaly model output [0~1]
-    QString                ocrText;     // PP-OCRv5 output
+    std::vector<Detection> detections;
+    float                  anomalyScore = 0.0f;
+    QString                ocrText;
     QString                timestamp;
 
     FrameResult() {}
@@ -83,11 +78,13 @@ Q_DECLARE_METATYPE(FrameResult)
 
 // ─────────────────────────────────────────────────────────────
 // AI_Processing
-// Pipeline: YOLOv8 → Anomaly → PP-OCRv5 (uses YOLO bbox)
+//
+// YOLO    → ONNX CPU  (.onnx)
+// Anomaly → Hailo NPU (.hef)
+// OCR     → ONNX CPU  (.onnx) + Thai charset dict
 // ─────────────────────────────────────────────────────────────
 
-class AI_Processing : public QObject
-{
+class AI_Processing : public QObject {
     Q_OBJECT
 
 public:
@@ -106,12 +103,19 @@ private slots:
     void processNextFrame();
 
 private:
-    // ── ONNX Runtime ─────────────────────────────────────────
-    Ort::Env*                          ortEnv      = nullptr;
-    Ort::MemoryInfo*                   memInfo     = nullptr;
-    std::unique_ptr<Ort::Session>      yoloSession;
-    std::unique_ptr<Ort::Session>      anomalySession;
-    std::unique_ptr<Ort::Session>      ocrRecSession;
+    // ── Hailo (Anomaly) ───────────────────────────────────────
+    std::shared_ptr<hailort::VDevice>            vdevice;
+    std::shared_ptr<hailort::InferModel>         anomalyInferModel;
+    std::optional<hailort::ConfiguredInferModel> anomalyConfigured;
+
+    // ── ONNX Runtime (YOLO + OCR CPU) ────────────────────────
+    Ort::Env*                         ortEnv    = nullptr;
+    Ort::MemoryInfo*                  memInfo   = nullptr;
+    std::unique_ptr<Ort::Session>     yoloSession;
+    std::unique_ptr<Ort::Session>     ocrRecSession;
+
+    // ── Thai charset ──────────────────────────────────────────
+    std::vector<std::string>          chars;    // loaded from dict file
 
     // ── Model runners ─────────────────────────────────────────
     std::vector<Detection> runYOLO(const cv::Mat& frame);
@@ -119,10 +123,14 @@ private:
     QString                runOCR(const cv::Mat& frame,
                                   const std::vector<Detection>& dets);
 
-    // ── Preprocessing helpers ─────────────────────────────────
-    std::vector<float> preprocessSquare(const cv::Mat& bgr, int size);
+    // ── Helpers ───────────────────────────────────────────────
     std::pair<std::vector<float>, int> preprocessRec(const cv::Mat& crop);
     std::string decodeCTC(const float* data, int steps, int vocabSize);
+    static std::vector<std::string> loadCharset(const std::string& dictPath);
+
+    // ── Merge bboxes for OCR ──────────────────────────────────
+    static cv::Rect mergeBoxes(const std::vector<Detection>& dets,
+                               const cv::Mat& image, int pad = 20);
 
     // ── Queue ─────────────────────────────────────────────────
     std::deque<cv::Mat> frameQueue;

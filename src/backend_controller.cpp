@@ -6,6 +6,9 @@
 #include <QPainter>
 #include <QDebug>
 #include <cstdio>
+#include <opencv2/freetype.hpp>
+
+static const std::string THAI_FONT = "/usr/share/fonts/truetype/tlwg/Garuda.ttf";
 
 // ─────────────────────────────────────────────────────────────
 // Constructor / Destructor
@@ -87,32 +90,34 @@ void BackendController::handleAiResult(const FrameResult &result) {
         cv::rectangle(previewMat, det.boundingBox, cv::Scalar(0, 255, 0), 3);
     }
 
-    // ② Draw anomaly score on image (top-right) — always visible
-    std::string anomalyStr;
-    char buf[32];
-    std::snprintf(buf, sizeof(buf), "%.2f", score);
-    anomalyStr = isAnomaly ? std::string("Defect detected") : std::string("No defect");
-    cv::Scalar anomalyColor = isAnomaly ? cv::Scalar(0, 0, 255) : cv::Scalar(0, 200, 0);
+    // ② Draw anomaly status (top-right) using FreeType — supports Unicode
+    {
+        auto ft2 = cv::freetype::createFreeType2();
+        ft2->loadFontData(THAI_FONT, 0);
 
-    // Background rect for readability
-    int baseline = 0;
-    cv::Size textSz = cv::getTextSize(anomalyStr, cv::FONT_HERSHEY_SIMPLEX, 0.7, 2, &baseline);
-    int tx = previewMat.cols - textSz.width - 10;
-    int ty = 30;
-    cv::rectangle(previewMat,
-                  cv::Point(tx - 4, ty - textSz.height - 4),
-                  cv::Point(tx + textSz.width + 4, ty + 4),
-                  cv::Scalar(0, 0, 0), cv::FILLED);
-    cv::putText(previewMat, anomalyStr,
-                cv::Point(tx, ty),
-                cv::FONT_HERSHEY_SIMPLEX, 0.7, anomalyColor, 2);
+        std::string anomalyStr = isAnomaly ? "Defect detected" : "No defect";
+        cv::Scalar anomalyColor = isAnomaly ? cv::Scalar(0, 0, 255) : cv::Scalar(0, 200, 0);
 
-    // ③ OCR text on image bottom
-    if (!result.ocrText.isEmpty()) {
-        cv::putText(previewMat,
-                    "OCR: " + result.ocrText.toStdString(),
-                    cv::Point(10, previewMat.rows - 20),
-                    cv::FONT_HERSHEY_SIMPLEX, 0.7, cv::Scalar(255, 200, 0), 2);
+        // Background rect
+        int base = 0;
+        cv::Size textSz = ft2->getTextSize(anomalyStr, 26, -1, &base);
+        int tx = previewMat.cols - textSz.width - 10;
+        int ty = 10;
+        cv::rectangle(previewMat,
+                      cv::Point(tx - 4, ty),
+                      cv::Point(tx + textSz.width + 4, ty + textSz.height + 4),
+                      cv::Scalar(0, 0, 0), cv::FILLED);
+        ft2->putText(previewMat, anomalyStr,
+                     cv::Point(tx, ty + textSz.height),
+                     26, anomalyColor, -1, cv::LINE_AA, true);
+
+        // ③ OCR text at bottom-left
+        if (!result.ocrText.isEmpty()) {
+            ft2->putText(previewMat,
+                         "OCR: " + result.ocrText.toStdString(),
+                         cv::Point(10, previewMat.rows - 12),
+                         24, cv::Scalar(255, 200, 0), -1, cv::LINE_AA, true);
+        }
     }
 
     // ④ Status bar message

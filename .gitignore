@@ -70,4 +70,6 @@ tools/
 
 # AI Models
 *.onnx
+*.hef
 
+*hailort.log

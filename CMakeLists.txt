@@ -22,7 +22,6 @@ find_package(OpenCV REQUIRED)
 
 # 3. ONNX Runtime — Auto-detect platform
 if(CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64|arm")
-    # Check both possible ARM paths
     if(EXISTS "${CMAKE_SOURCE_DIR}/lib/onnxruntime")
         set(ONNX_ROOT "${CMAKE_SOURCE_DIR}/lib/onnxruntime")
     else()
@@ -41,12 +40,23 @@ else()
     message(STATUS "Found ONNX Runtime: ${ONNX_LIB}")
 endif()
 
+# 4. Hailo AI HAT
+find_library(HAILO_LIB NAMES hailort PATHS /usr/lib /usr/local/lib)
+if(HAILO_LIB)
+    message(STATUS "HailoRT: ${HAILO_LIB}")
+else()
+    message(WARNING "HailoRT not found")
+endif()
+
 # Include Headers
 include_directories(include)
 include_directories(ui)
 include_directories(${ONNX_ROOT}/include)
+if(HAILO_LIB)
+    include_directories(/usr/include/hailo)
+endif()
 
-# 4. Source files
+# 5. Source files
 set(SOURCES
     main.cpp
     src/camera_handler.cpp
@@ -62,19 +72,22 @@ set(HEADERS
     ui/mainwindow.h
 )
 
-# 5. Executable target
+# 6. MagOp_app
 add_executable(MagOp_app ${SOURCES} ${HEADERS})
 
-# 6. Link libraries
 target_link_libraries(MagOp_app PRIVATE
     Qt6::Widgets
     Qt6::Core
     Qt6::Gui
     ${OpenCV_LIBS}
     ${ONNX_LIB}
+    opencv_freetype
 )
 
-# 7. RPATH
+if(HAILO_LIB)
+    target_link_libraries(MagOp_app PRIVATE ${HAILO_LIB})
+endif()
+
 if(UNIX AND NOT APPLE)
     set_target_properties(MagOp_app PROPERTIES
         BUILD_WITH_INSTALL_RPATH TRUE
@@ -83,7 +96,6 @@ if(UNIX AND NOT APPLE)
     )
 endif()
 
-# 8. Windows — copy DLL
 if(WIN32)
     add_custom_command(TARGET MagOp_app POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
@@ -91,25 +103,27 @@ if(WIN32)
         $<TARGET_FILE_DIR:MagOp_app>)
 endif()
 
-# 9. test_inference — standalone AI test tool
-if(EXISTS "${CMAKE_SOURCE_DIR}/models/yolo/yolo.onnx")
-    add_executable(test_inference tools/test_inference.cpp)
-    target_include_directories(test_inference PRIVATE
+# 7. test_hailo — standalone Hailo inference test
+if(EXISTS "${CMAKE_SOURCE_DIR}/tools/test_hailo.cpp" AND HAILO_LIB)
+    add_executable(test_hailo tools/test_hailo.cpp)
+    target_include_directories(test_hailo PRIVATE
+        /usr/include/hailo
         ${ONNX_ROOT}/include
         ${OpenCV_INCLUDE_DIRS}
     )
-    target_link_libraries(test_inference PRIVATE
+    target_link_libraries(test_hailo PRIVATE
         ${OpenCV_LIBS}
         ${ONNX_LIB}
+        ${HAILO_LIB}
     )
     if(UNIX AND NOT APPLE)
-        set_target_properties(test_inference PROPERTIES
+        set_target_properties(test_hailo PROPERTIES
             BUILD_WITH_INSTALL_RPATH TRUE
             INSTALL_RPATH "${ONNX_ROOT}/lib"
             INSTALL_RPATH_USE_LINK_PATH TRUE
         )
     endif()
-    message(STATUS "test_inference: enabled")
+    message(STATUS "test_hailo: enabled")
 else()
-    message(STATUS "test_inference: skipped — models/yolo/yolo.onnx not found")
+    message(STATUS "test_hailo: skipped")
 endif()
