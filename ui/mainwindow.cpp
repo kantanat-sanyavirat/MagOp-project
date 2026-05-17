@@ -467,12 +467,35 @@ void MainWindow::setupUI() {
     // โหมดแสกนใหม่  (btnReviewBack ซ่อน) → กลับหน้า Capture (0)
     // โหมด History   (btnReviewBack แสดง) → กลับหน้า History (2)
     connect(btnReviewDelete, &QPushButton::clicked, this, [this]() {
-        const QMessageBox::StandardButton reply = QMessageBox::question(
-            this, "Confirm Delete", "Delete this image?",
-            QMessageBox::Yes | QMessageBox::No);
-        if (reply != QMessageBox::Yes) return;
+        // Custom confirm dialog — ทำงานได้ใน fullscreen
+        QDialog dlg(this, Qt::Dialog | Qt::WindowStaysOnTopHint);
+        dlg.setWindowTitle("Confirm Delete");
+        dlg.setFixedSize(300, 130);
+        dlg.setStyleSheet("background:#1e1e2e; color:white; font-size:14px;");
 
-        emit reqDiscard();
+        auto* vlay = new QVBoxLayout(&dlg);
+        auto* lbl  = new QLabel("Delete this image?", &dlg);
+        lbl->setAlignment(Qt::AlignCenter);
+
+        auto* hlay  = new QHBoxLayout();
+        auto* btnYes = new QPushButton("YES",  &dlg);
+        auto* btnNo  = new QPushButton("NO",   &dlg);
+        btnYes->setFixedHeight(40);
+        btnNo ->setFixedHeight(40);
+        btnYes->setStyleSheet("background:#FF4560; color:white; font-weight:bold; border-radius:6px;");
+        btnNo ->setStyleSheet("background:#444; color:white; border-radius:6px;");
+
+        hlay->addWidget(btnNo);
+        hlay->addWidget(btnYes);
+        vlay->addWidget(lbl);
+        vlay->addLayout(hlay);
+
+        connect(btnYes, &QPushButton::clicked, &dlg, &QDialog::accept);
+        connect(btnNo,  &QPushButton::clicked, &dlg, &QDialog::reject);
+
+        if (dlg.exec() != QDialog::Accepted) return;
+
+        emit reqDiscard(currentFileName);
         const int returnPage = btnReviewBack->isVisible() ? 2 : 0;
         stackedWidget->setCurrentIndex(returnPage);
     });
@@ -481,11 +504,9 @@ void MainWindow::setupUI() {
     // ปุ่ม BACK (Review — history mode)  → กลับหน้า History เฉยๆ ไม่ discard
     connect(btnReviewBack, &QPushButton::clicked, this, [this]() {
         if (btnSave->text() == "SAVE") {
-            // new scan mode — discard uncommitted frame
-            emit reqDiscard();
+            emit reqDiscard(); // new scan mode — discard without filename = just clear state
             stackedWidget->setCurrentIndex(0);
         } else {
-            // history mode — just go back
             stackedWidget->setCurrentIndex(2);
         }
     });

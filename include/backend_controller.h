@@ -29,7 +29,7 @@ public slots:
     void save(const QString &userText, const QString &originalOcrText);
 
     // ลบไฟล์ที่กำลังจัดการอยู่ (ถ้ามีอยู่จริง)
-    void discard();
+    void discard(const QString& fileName = "");
 
     // ส่งออกไฟล์ที่บันทึกแล้วไปยัง USB Drive
     void exportToUsb(const QString &fileName);

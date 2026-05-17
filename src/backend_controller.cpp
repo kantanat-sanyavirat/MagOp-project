@@ -201,21 +201,22 @@ void BackendController::save(const QString &userText, const QString &originalOcr
     }
 }
 
-void BackendController::discard() {
-    // Delete files from disk only if they were already saved
-    if (!currentFileName.isEmpty()) {
-        const QString fullPath = SAVE_PATH + "/" + currentFileName;
+void BackendController::discard(const QString& fileName) {
+    // ใช้ fileName ที่ส่งมา ถ้าไม่มีใช้ currentFileName
+    QString target = fileName.isEmpty() ? currentFileName : fileName;
+
+    if (!target.isEmpty()) {
+        const QString fullPath = SAVE_PATH + "/" + target;
         if (QFile::exists(fullPath)) {
             QFile::remove(fullPath);
             QString labelPath = fullPath;
             labelPath.replace(".jpg", ".txt", Qt::CaseInsensitive);
             QFile::remove(labelPath);
-            emit statusMessage("Deleted: " + currentFileName);
+            emit statusMessage("Deleted: " + target);
             refreshFileList();
         }
     }
 
-    // Always clear in-memory state so next SCAN starts fresh
     lastCapturedFrame.release();
     currentDetections.clear();
     currentFileName.clear();

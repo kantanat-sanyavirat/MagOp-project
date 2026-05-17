@@ -45,7 +45,7 @@ signals:
     void reqSave(const QString &userText, const QString &originalOcrText);
 
     // ร้องขอให้ Backend ยกเลิกและลบภาพที่แสกน
-    void reqDiscard();
+    void reqDiscard(const QString& fileName = "");
 
     // [หมายเหตุ] reqAdjust ถูก comment ออกชั่วคราว
     // เนื่องจาก signature ไม่ตรงกับ BackendController::adjustImage(int, bool)
