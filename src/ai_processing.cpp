@@ -358,6 +358,18 @@ QString AI_Processing::runOCR(const cv::Mat& frame,
     if (merged.area() < 100) return "";
 
     cv::Mat crop = frame(merged);
+
+    // ── LAB CLAHE — เพิ่ม local contrast ก่อนส่ง OCR ────────
+    cv::Mat lab;
+    cv::cvtColor(crop, lab, cv::COLOR_BGR2Lab);
+    std::vector<cv::Mat> channels;
+    cv::split(lab, channels);
+    auto clahe = cv::createCLAHE(3.0, cv::Size(8, 8));
+    clahe->apply(channels[0], channels[0]);
+    cv::merge(channels, lab);
+    cv::cvtColor(lab, crop, cv::COLOR_Lab2BGR);
+    // ─────────────────────────────────────────────────────────
+
     auto [rec_data, rec_w] = preprocessRec(crop);
 
     Ort::AllocatorWithDefaultOptions alloc;
